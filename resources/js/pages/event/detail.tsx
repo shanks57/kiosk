@@ -125,7 +125,7 @@ export default function Welcome({
                             </p>
                             <Button
                                 variant="ghost"
-                                className="mx-auto text-primary"
+                                className="mx-auto text-primary rounded-full cursor-pointer"
                             >
                                 Read More
                             </Button>
@@ -211,7 +211,7 @@ export default function Welcome({
                                 />
                             </div>
                             <div className="p-2 pt-0">
-                                <Button className="w-full bg-primary py-6 text-lg text-white hover:bg-primary/90">
+                                <Button className="w-full cursor-pointer bg-primary py-6 text-lg text-white hover:bg-primary/90">
                                     Checkout Ticket
                                 </Button>
                             </div>

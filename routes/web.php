@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CheckoutController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\EventController;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,10 @@ Route::get('/', function () {
 // Event listing and detail routes (public)
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
 Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
+
+// Checkout routes (public)
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::get('/checkout/{id}', [CheckoutController::class, 'show'])->name('checkout.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
@@ -49,4 +54,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard.user');
 });
 
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';

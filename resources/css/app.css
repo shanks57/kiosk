@@ -144,13 +144,13 @@
 
 .border-t-dashed-custom {
     border-top-style: solid;
-    border-top-width: 2px;
+    border-top-width: 1.5px;
     border-image: repeating-linear-gradient(
             to right,
             #d9d9d9 0,
-            #d9d9d9 16px,
-            /* panjang garis */ transparent 16px,
-            transparent 28px /* jarak antar garis */
+            #d9d9d9 10px,
+            /* panjang garis */ transparent 10px,
+            transparent 20px /* jarak antar garis */
         )
         1;
 }
