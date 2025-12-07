@@ -4,26 +4,39 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PublicLayout from '@/layouts/public-layout';
-import { Head } from '@inertiajs/react';
+import { formatRupiah } from '@/lib/utils';
+import { EventType, TicketCategoryType } from '@/types';
+import { Head, router } from '@inertiajs/react';
+import dayjs from 'dayjs';
+
 import { Calendar, Info, MapPin } from 'lucide-react';
 import { useState } from 'react';
 
-export default function Welcome({
-    canRegister = true,
-}: {
-    canRegister?: boolean;
-}) {
-    const [tickets, setTickets] = useState({
-        early: 0,
-        regular: 0,
-        vip: 0,
-    });
+type EventDetailProps = {
+    event: EventType;
+    ticketCategories: TicketCategoryType[];
+};
+
+export default function EventDetail(props: EventDetailProps) {
+    const { event, ticketCategories } = props;
+    const [tickets, setTickets] = useState(
+        Object.fromEntries(ticketCategories.map((tc) => [tc.name, 0])),
+    );
 
     const handleChange = (type: keyof typeof tickets, value: number) => {
-        setTickets((prev) => ({
+        setTickets((prev: typeof tickets) => ({
             ...prev,
             [type]: Math.max(0, prev[type] + value),
         }));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        router.post('/event-checkout', {
+            event_id: event.id,
+            tickets,
+        });
     };
 
     return (
@@ -37,7 +50,10 @@ export default function Welcome({
             </Head>
             <div className="relative h-[300px] w-full overflow-hidden">
                 <img
-                    src="https://placehold.co/1920x600?text=Event+Banner"
+                    src={
+                        event.banner ||
+                        'https://placehold.co/600x300?text=Event+Banner'
+                    }
                     className="h-full w-full scale-110 object-cover blur-sm"
                 />
                 <div className="absolute inset-0 bg-black/40"></div>
@@ -48,8 +64,7 @@ export default function Welcome({
                 <div className="lg:col-span-2">
                     <div className="p-6">
                         <h1 className="mb-2 text-2xl font-medium">
-                            Rich Brian – “Where Is My Head?” 2025 Asia Tour in
-                            Singapore
+                            {event.title}
                         </h1>
                         <p className="mb-4 text-lg font-normal">
                             Indonesia's Largest User Experience Conference
@@ -57,8 +72,8 @@ export default function Welcome({
 
                         <div className="space-y-2 text-base text-[#1E1E1E]">
                             <p className="flex items-center gap-2">
-                                <Calendar size={16} /> 28–30 Nov 2025, 10:00 –
-                                21:00 WIB
+                                <Calendar size={16} />{' '}
+                                {`${dayjs(event.start_time).format('DD')} - ${dayjs(event.end_time).format('DD MMMM YYYY, HH:mm')} WIB`}
                             </p>
                             <p className="flex items-center gap-2">
                                 <MapPin size={16} /> Jakarta Convention Center,
@@ -125,7 +140,7 @@ export default function Welcome({
                             </p>
                             <Button
                                 variant="ghost"
-                                className="mx-auto text-primary rounded-full cursor-pointer"
+                                className="mx-auto cursor-pointer rounded-full text-primary"
                             >
                                 Read More
                             </Button>
@@ -164,57 +179,72 @@ export default function Welcome({
                 {/* RIGHT: TICKET PURCHASE */}
 
                 <div className="space-y-4">
-                    <Card className="z-50 -mt-55 rounded-xl border p-0">
-                        <CardContent className="space-y-4 p-0">
-                            {/* Event Preview */}
-                            <div className="h-45 w-full overflow-hidden rounded-t-lg">
-                                <img
-                                    src="https://placehold.co/200?text=Event+Banner"
-                                    alt="event-banner"
-                                    className="h-45 w-full object-cover"
-                                />
-                            </div>
+                    {/* Punch Holes */}
 
-                            <p className="mb-2 px-4 text-xl font-medium text-[#1E1E1E]">
-                                Jakarta UX Summit 2025
-                            </p>
-                            <p className="flex items-center gap-2 px-4 text-[#1E1E1E]">
-                                <Calendar size={14} /> 28-30 Nov 2025, 10:00 -
-                                21:00 WIB
-                            </p>
+                    <Card className="relative z-50 -mt-55 overflow-hidden rounded-xl border-none p-0 shadow-none">
+                        <div className="absolute top-[42%] -left-3 z-60 h-6 w-6 rounded-full border border-gray-200 bg-white" />
+                        <div className="absolute top-[42%] -right-3 z-60 h-6 w-6 rounded-full border border-gray-200 bg-white" />
+                        <CardContent className="p-0">
+                            <form
+                                onSubmit={handleSubmit}
+                                className="space-y-4 border"
+                            >
+                                {/* Event Preview */}
+                                <div className="h-45 w-full overflow-hidden rounded-t-lg">
+                                    <img
+                                        src={
+                                            event.banner ||
+                                            'https://placehold.co/600x300?text=Event+Banner'
+                                        }
+                                        alt="event-banner"
+                                        className="h-45 w-full object-cover"
+                                    />
+                                </div>
 
-                            <div className="border-t-dashed-custom border-t p-4">
-                                <p className="mb-3 font-medium">
-                                    Ticket Options
+                                <p className="mb-2 px-4 text-xl font-medium text-[#1E1E1E]">
+                                    {event.title}
+                                </p>
+                                <p className="flex items-center gap-2 px-4 text-[#1E1E1E]">
+                                    <Calendar size={14} />
+                                    {`${dayjs(event.start_time).format('DD')} - ${dayjs(event.end_time).format('DD MMMM YYYY, HH:mm')} WIB`}
                                 </p>
 
-                                <TicketSelector
-                                    title="Early Bird Pass"
-                                    price="Rp150.000"
-                                    count={tickets.early}
-                                    inc={() => handleChange('early', 1)}
-                                    dec={() => handleChange('early', -1)}
-                                />
-                                <TicketSelector
-                                    title="Regular Pass"
-                                    price="Rp250.000"
-                                    count={tickets.regular}
-                                    inc={() => handleChange('regular', 1)}
-                                    dec={() => handleChange('regular', -1)}
-                                />
-                                <TicketSelector
-                                    title="VIP Experience Pass"
-                                    price="Rp450.000"
-                                    count={tickets.vip}
-                                    inc={() => handleChange('vip', 1)}
-                                    dec={() => handleChange('vip', -1)}
-                                />
-                            </div>
-                            <div className="p-2 pt-0">
-                                <Button className="w-full cursor-pointer bg-primary py-6 text-lg text-white hover:bg-primary/90">
-                                    Checkout Ticket
-                                </Button>
-                            </div>
+                                <div className="border-t-dashed-custom border-t px-2">
+                                    <p className="mb-3 px-2 pt-4 font-medium">
+                                        Ticket Options
+                                    </p>
+                                    {ticketCategories?.map((tc) => (
+                                        <TicketSelector
+                                            key={tc.name}
+                                            title={tc.name || ''}
+                                            price={formatRupiah(tc.price || 0)}
+                                            count={
+                                                tickets[tc.name as string] || 0
+                                            }
+                                            inc={() =>
+                                                handleChange(
+                                                    tc.name as string,
+                                                    1,
+                                                )
+                                            }
+                                            dec={() =>
+                                                handleChange(
+                                                    tc.name as string,
+                                                    -1,
+                                                )
+                                            }
+                                        />
+                                    ))}
+                                </div>
+                                <div className="p-2 pt-0">
+                                    <Button
+                                        type="submit"
+                                        className="w-full cursor-pointer bg-primary py-6 text-lg text-white hover:bg-primary/90"
+                                    >
+                                        Checkout Ticket
+                                    </Button>
+                                </div>
+                            </form>
                         </CardContent>
                     </Card>
                 </div>

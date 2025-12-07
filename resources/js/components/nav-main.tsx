@@ -8,6 +8,7 @@ import {
 import { resolveUrl } from '@/lib/utils';
 import { NavGroup } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
+import { Fragment } from 'react/jsx-runtime';
 
 type NavMainProps = {
     menus: NavGroup[];
@@ -18,7 +19,7 @@ export function NavMain(props: NavMainProps) {
     return (
         <SidebarGroup className="px-2 py-0">
             {props.menus.map((menu) => (
-                <>
+                <Fragment key={menu.title}>
                     <SidebarGroupLabel>{menu.title}</SidebarGroupLabel>
                     <SidebarMenu>
                         {menu.items.map((item) => (
@@ -38,7 +39,7 @@ export function NavMain(props: NavMainProps) {
                             </SidebarMenuItem>
                         ))}
                     </SidebarMenu>
-                </>
+                </Fragment>
             ))}
         </SidebarGroup>
     );

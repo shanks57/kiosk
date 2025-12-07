@@ -14,19 +14,28 @@ class CheckoutController extends Controller
      */
     public function index(Request $request)
     {
-        $query = TicketCategory::query()
-            ->with(['event.organizer.user', 'event.venue', 'event.sections'])
-            ->when($request->input('q'), function ($q, $qstr) {
-                $q->whereHas('event', function ($eventQuery) use ($qstr) {
-                    $eventQuery->where('title', 'like', '%' . $qstr . '%');
-                });
-            });
-
-        $ticketCategories = $query->orderBy('event.start_time', 'asc')->paginate(12)->withQueryString();
+        $id = $request->input('event_id');
+        $event = Event::find($id);
+        $ticketCategories = TicketCategory::whereHas('event', function ($eventQuery) use ($id) {
+            $eventQuery->where('id', '=', $id);
+        })->with(['event.organizer.user', 'event.venue', 'event.sections'])->get();
 
         return Inertia::render('checkout/form', [
             'ticketCategories' => $ticketCategories,
             'filters' => $request->only(['q']),
+            'event' => $event,
+        ]);
+    }
+
+    public function event(Request $request)
+    {
+
+        $id = $request->input('event_id');
+        $ticket = $request->input('tickets');
+
+        return redirect()->route('checkout.index', [
+            'event_id' => $id,
+            'tickets' => $ticket,
         ]);
     }
 

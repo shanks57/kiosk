@@ -1,0 +1,46 @@
+name: 🚀 Deploy Laravel to cPanel via FTP
+
+on:
+  push:
+    branches:
+      - main # Ganti jika branch deploy kamu berbeda
+
+jobs:
+  deploy:
+    name: Upload Files via FTP
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📦 Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: 🧰 Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: 🛠 Install Dependencies
+        run: |
+          composer install --no-dev --optimize-autoloader
+          npm ci --legacy-peer-deps
+          npm run build
+
+      - name: 🚀 Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: 109.106.253.201
+          username: jembod@tron.kawanlelah.com
+          password: penakngene
+          server-dir: /
+          local-dir: ./
+          exclude: |
+            **/.git*
+            **/.github*
+            node_modules/**
+            vendor/**
+            tests/**
+            .env
+            .env.*
+            storage/debugbar
+            storage/logs
+            storage/framework/cache

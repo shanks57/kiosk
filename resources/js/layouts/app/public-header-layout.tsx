@@ -1,11 +1,12 @@
 import { Button } from '@/components/ui/button';
-import { type BreadcrumbItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { SharedData, type BreadcrumbItem } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import type { PropsWithChildren } from 'react';
 
 export default function PublicHeaderLayout({}: PropsWithChildren<{
     breadcrumbs?: BreadcrumbItem[];
 }>) {
+    const { auth } = usePage<SharedData>().props;
     return (
         <>
             <header className="z-50 w-full border-b border-gray-200 bg-white backdrop-blur-md">
@@ -39,14 +40,24 @@ export default function PublicHeaderLayout({}: PropsWithChildren<{
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <Link href="/register">
-                            <Button variant="ghost">Daftar</Button>
-                        </Link>
-                        <a href="/login">
-                            <Button className="bg-primary text-white hover:bg-primary/90">
-                                Masuk
-                            </Button>
-                        </a>
+                        {!auth.user ? (
+                            <>
+                                <Link href="/register">
+                                    <Button variant="ghost">Daftar</Button>
+                                </Link>
+                                <Link href="/login">
+                                    <Button className="bg-primary text-white hover:bg-primary/90">
+                                        Masuk
+                                    </Button>
+                                </Link>
+                            </>
+                        ) : (
+                            <Link href="/dashboard">
+                                <Button className="bg-primary text-white hover:bg-primary/90">
+                                    Dashboard
+                                </Button>
+                            </Link>
+                        )}
                     </div>
                 </div>
             </header>

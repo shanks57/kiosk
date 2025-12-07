@@ -25,11 +25,11 @@ class RequireRole
         }
 
         foreach ($roles as $role) {
-            if ($user->roles()->where('name', $role)->exists()) {
+            if ($user->roles()->where('name', trim($role))->exists()) {
                 return $next($request);
             }
         }
 
-        abort(403);
+        abort(403, 'Unauthorized: Required role not found');
     }
 }

@@ -122,6 +122,7 @@ export interface EventType {
     organizer?: OrganizerType | null;
     venue?: EventVenueType | null;
     sections?: EventSectionType[];
+    ticketCategories?: TicketCategoryType[];
     // [key: string]: unknown;
 }
 
@@ -167,3 +168,36 @@ export interface UserType {
     organizer?: OrganizerType | null;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+export type ParticipantType = {
+    id: number;
+    order_id: number;
+    event_seat_id: number | null;
+    price: number;
+    seat: EventSeatType | null;
+    ticket_category_id: number;
+    category: TicketCategoryType;
+    order: OrderType;
+    created_at?: string | null;
+    updated_at?: string | null;
+};
+
+export type PaginationType<T> = {
+    current_page: number;
+    data: Array<T>;
+    first_page_url: string;
+    from: number;
+    last_page: number;
+    last_page_url: string;
+    links: Array<{
+        url: string;
+        label: string;
+        active: boolean;
+    }>;
+    next_page_url: string | null;
+    path: string;
+    per_page: number;
+    prev_page_url: string | null;
+    to: number;
+    total: number;
+};

@@ -20,7 +20,7 @@ export const TicketSelector = ({
     dec: () => void;
 }) => {
     return (
-        <div className="flex items-center justify-between py-3">
+        <div className="flex items-center justify-between rounded-md px-3 py-3 hover:bg-primary/10">
             <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
                     <p className="font-medium">{title}</p>
@@ -36,10 +36,11 @@ export const TicketSelector = ({
                         </TooltipContent>
                     </Tooltip>
                 </div>
-                <p className="">{price}</p>
+                <p className="">Rp{price}</p>
             </div>
             <div className="flex items-center gap-3">
                 <Button
+                    type="button"
                     variant="outline"
                     size="icon"
                     onClick={dec}
@@ -49,6 +50,7 @@ export const TicketSelector = ({
                 </Button>
                 <span>{count}</span>
                 <Button
+                    type="button"
                     variant="outline"
                     size="icon"
                     onClick={inc}

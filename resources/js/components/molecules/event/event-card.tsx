@@ -1,9 +1,11 @@
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { EventType } from '@/types';
+import dayjs from 'dayjs';
 
-export const EventCard = (props: EventType) => {
+export const EventCard = (props: { data: EventType }) => {
     const { title, banner, start_time, end_time, sections, organizer, id } =
-        props;
+        props.data;
+
     return (
         <Card className="cursor-pointer gap-0 overflow-hidden rounded-xl py-0 transition hover:shadow-lg">
             <a href={`/events/${id}`}>
@@ -20,19 +22,22 @@ export const EventCard = (props: EventType) => {
                         {title}
                     </h3>
                     <p className="mb-2 text-sm">
-                        {start_time} ~ {end_time}
+                        {dayjs(start_time).format('DD MMM YYYY (ddd)')} ~{' '}
+                        {dayjs(end_time).format('DD MMM YYYY (ddd)')}
                     </p>
-                    <p className="mb-2 text-sm text-gray-400">
-                        Starting from Rp
-                        {sections && sections.length > 0
-                            ? sections[0].price?.toLocaleString()
-                            : '0'}
-                    </p>
+                    {sections && sections.length > 0 ? (
+                        <p className="mb-2 text-sm text-gray-400">
+                            Starting from Rp
+                            {sections[0].price?.toLocaleString()}
+                        </p>
+                    ) : (
+                        <p className="mb-2 text-sm text-gray-400">FREE</p>
+                    )}
                     <CardFooter className="flex items-center gap-3 border-t px-0 pt-4">
                         <img
                             src={
                                 organizer?.user?.avatar ||
-                                'https://via.placeholder.com/40?text=No+Logo'
+                                'https://placehold.co/40?text=No+Logo'
                             }
                             alt="organizer-logo"
                             className="h-6 w-6 rounded-full object-cover"

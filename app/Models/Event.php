@@ -7,7 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Event extends Model
 {
     protected $fillable = [
-        'organizer_id', 'title', 'description', 'start_time', 'end_time', 'banner',
+        'organizer_id',
+        'title',
+        'description',
+        'start_time',
+        'end_time',
+        'banner',
     ];
 
     public function organizer()
@@ -23,5 +28,10 @@ class Event extends Model
     public function sections()
     {
         return $this->hasMany(EventSection::class);
+    }
+
+    public function ticketCategories()
+    {
+        return $this->hasMany(TicketCategory::class);
     }
 }

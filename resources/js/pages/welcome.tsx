@@ -2,15 +2,19 @@ import { EventCard } from '@/components/molecules/event/event-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import PublicLayout from '@/layouts/public-layout';
-import { type SharedData } from '@/types';
+import { EventType, type SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { ArrowUpRight, Search } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Welcome({
     canRegister = true,
+    nearestEvents,
+    featuredEvent,
 }: {
     canRegister?: boolean;
+    nearestEvents: Array<EventType>;
+    featuredEvent: Array<EventType>;
 }) {
     const { auth } = usePage<SharedData>().props;
     const [isFocused, setIsFocused] = useState(false);
@@ -73,34 +77,8 @@ export default function Welcome({
 
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
                         {/* Example Card */}
-                        {[1, 2, 3, 4, 5].map((i) => (
-                            <EventCard
-                                key={i}
-                                id={i}
-                                title={`This is the nearest event title for event number ${i}. It is a sample event title that is used to demonstrate the layout of the nearest events section.`}
-                                banner="https://placehold.co/400x200?text=Event+Banner"
-                                start_time="30 Nov 2025 (Sun)"
-                                end_time="30 Nov 2025 (Sun)"
-                                sections={[
-                                    {
-                                        id: i,
-                                        name: 'General Admission',
-                                        price: 350000,
-                                    },
-                                ]}
-                                organizer={{
-                                    id: i,
-                                    company_name: 'Moka Event Organizer',
-                                    contact_email: 'moka@me.com',
-                                    contact_phone: '123-456-7890',
-                                    user: {
-                                        id: i,
-                                        name: 'John Doe',
-                                        email: `johndoe${i}@example.com`,
-                                        avatar: 'https://placehold.co/40?text=No+Logo',
-                                    },
-                                }}
-                            />
+                        {nearestEvents.map((data) => (
+                            <EventCard key={data.id} data={data} />
                         ))}
                     </div>
                 </section>
@@ -145,34 +123,8 @@ export default function Welcome({
                     </div>
 
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                            <EventCard
-                                key={i}
-                                id={i}
-                                title={`This is the nearest event title for event number ${i}. It is a sample event title that is used to demonstrate the layout of the nearest events section.`}
-                                banner="https://placehold.co/400x200?text=Event+Banner"
-                                start_time="30 Nov 2025 (Sun)"
-                                end_time="30 Nov 2025 (Sun)"
-                                sections={[
-                                    {
-                                        id: i,
-                                        name: 'General Admission',
-                                        price: 350000,
-                                    },
-                                ]}
-                                organizer={{
-                                    id: i,
-                                    company_name: 'Moka Event Organizer',
-                                    contact_email: 'moka@me.com',
-                                    contact_phone: '123-456-7890',
-                                    user: {
-                                        id: i,
-                                        name: 'John Doe',
-                                        email: `johndoe${i}@example.com`,
-                                        avatar: 'https://placehold.co/40?text=No+Logo',
-                                    },
-                                }}
-                            />
+                        {featuredEvent.map((data, i) => (
+                            <EventCard key={i} data={data} />
                         ))}
                     </div>
                 </section>

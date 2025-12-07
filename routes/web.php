@@ -5,15 +5,16 @@ use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventDashboardController;
+use App\Http\Controllers\LandingController;
+use App\Http\Controllers\OrganizerEventController;
+use App\Http\Controllers\ParticipantController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CheckinController;
+
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
-Route::get('/', function () {
-    return Inertia::render('welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
-})->name('home');
+Route::get('/', [LandingController::class, 'index'])->name('welcome');
 
 // Event listing and detail routes (public)
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
@@ -21,7 +22,15 @@ Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show'
 
 // Checkout routes (public)
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/event-checkout', [CheckoutController::class, 'event'])->name('checkout.event');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/checkout/{id}', [CheckoutController::class, 'show'])->name('checkout.show');
+
+// Checkin (public pages for scanner and manual code input)
+
+Route::get('/checkin/scan', [CheckinController::class, 'scan'])->name('checkin.scan');
+Route::get('/checkin/manual', [CheckinController::class, 'manual'])->name('checkin.manual');
+Route::post('/checkin', [CheckinController::class, 'check'])->name('checkin.check');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
@@ -31,6 +40,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Route::get('dashboard/user', [DashboardController::class, 'dashboardUser'])->name('dashboard.user');
 
     Route::get('/dashboard/events', [EventDashboardController::class, 'index'])->name('dashboard.events');
+
+    // Organizer event management routes
+    Route::middleware('role:organizer')->prefix('/dashboard/events')->name('organizer.events.')->group(function () {
+        Route::get('/', [OrganizerEventController::class, 'index'])->name('index');
+        Route::get('/create', [OrganizerEventController::class, 'create'])->name('create');
+        Route::post('/', [OrganizerEventController::class, 'store'])->name('store');
+        Route::get('/{event}', [OrganizerEventController::class, 'show'])->name('show');
+        Route::get('/{event}/edit', [OrganizerEventController::class, 'edit'])->name('edit');
+        Route::put('/{event}', [OrganizerEventController::class, 'update'])->name('update');
+        Route::delete('/{event}', [OrganizerEventController::class, 'destroy'])->name('destroy');
+
+        Route::get('/{event}/participants', [ParticipantController::class, 'index'])->name('participants');
+        Route::post('/{event}/participants', [ParticipantController::class, 'store'])->name('participants.store');
+        Route::delete('/{event}/participants/{id}', [ParticipantController::class, 'destroy'])->name('participants.destroy');
+        Route::get('/{event}/participants/export', [ParticipantController::class, 'export'])->name('participants.export');
+    });
 });
 
 require __DIR__ . '/settings.php';
