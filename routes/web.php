@@ -55,6 +55,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{event}/participants', [ParticipantController::class, 'store'])->name('participants.store');
         Route::delete('/{event}/participants/{id}', [ParticipantController::class, 'destroy'])->name('participants.destroy');
         Route::get('/{event}/participants/export', [ParticipantController::class, 'export'])->name('participants.export');
+
+        // Ticket categories CRUD for an event
+        Route::get('/{event}/ticket-categories', [\App\Http\Controllers\TicketCategoryController::class, 'index'])->name('ticket-categories.index');
+        Route::get('/{event}/ticket-categories/create', [\App\Http\Controllers\TicketCategoryController::class, 'create'])->name('ticket-categories.create');
+        Route::post('/{event}/ticket-categories', [\App\Http\Controllers\TicketCategoryController::class, 'store'])->name('ticket-categories.store');
+        Route::get('/{event}/ticket-categories/{category}/edit', [\App\Http\Controllers\TicketCategoryController::class, 'edit'])->name('ticket-categories.edit');
+        Route::put('/{event}/ticket-categories/{category}', [\App\Http\Controllers\TicketCategoryController::class, 'update'])->name('ticket-categories.update');
+        Route::delete('/{event}/ticket-categories/{category}', [\App\Http\Controllers\TicketCategoryController::class, 'destroy'])->name('ticket-categories.destroy');
     });
 });
 
