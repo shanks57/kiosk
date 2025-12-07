@@ -14,7 +14,6 @@ class TicketCategoryController extends Controller
     {
         $user = Auth::user();
         $organizer = $user->organizer;
-        abort_if($event->organizer_id !== $organizer?->id, 403);
 
         $categories = TicketCategory::where('event_id', $event->id)->get();
 
@@ -28,7 +27,6 @@ class TicketCategoryController extends Controller
     {
         $user = Auth::user();
         $organizer = $user->organizer;
-        abort_if($event->organizer_id !== $organizer?->id, 403);
 
         return Inertia::render('organizer/events/ticket-categories/create', [
             'event' => $event,
@@ -39,7 +37,6 @@ class TicketCategoryController extends Controller
     {
         $user = Auth::user();
         $organizer = $user->organizer;
-        abort_if($event->organizer_id !== $organizer?->id, 403);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -58,8 +55,6 @@ class TicketCategoryController extends Controller
     {
         $user = Auth::user();
         $organizer = $user->organizer;
-        abort_if($event->organizer_id !== $organizer?->id, 403);
-        abort_if($category->event_id !== $event->id, 404);
 
         return Inertia::render('organizer/events/ticket-categories/edit', [
             'event' => $event,
@@ -71,8 +66,6 @@ class TicketCategoryController extends Controller
     {
         $user = Auth::user();
         $organizer = $user->organizer;
-        abort_if($event->organizer_id !== $organizer?->id, 403);
-        abort_if($category->event_id !== $event->id, 404);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -89,8 +82,6 @@ class TicketCategoryController extends Controller
     {
         $user = Auth::user();
         $organizer = $user->organizer;
-        abort_if($event->organizer_id !== $organizer?->id, 403);
-        abort_if($category->event_id !== $event->id, 404);
 
         $category->delete();
 

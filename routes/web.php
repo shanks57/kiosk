@@ -10,7 +10,7 @@ use App\Http\Controllers\OrganizerEventController;
 use App\Http\Controllers\ParticipantController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CheckinController;
-
+use App\Http\Controllers\TicketCategoryController;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
@@ -57,12 +57,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{event}/participants/export', [ParticipantController::class, 'export'])->name('participants.export');
 
         // Ticket categories CRUD for an event
-        Route::get('/{event}/ticket-categories', [\App\Http\Controllers\TicketCategoryController::class, 'index'])->name('ticket-categories.index');
-        Route::get('/{event}/ticket-categories/create', [\App\Http\Controllers\TicketCategoryController::class, 'create'])->name('ticket-categories.create');
-        Route::post('/{event}/ticket-categories', [\App\Http\Controllers\TicketCategoryController::class, 'store'])->name('ticket-categories.store');
-        Route::get('/{event}/ticket-categories/{category}/edit', [\App\Http\Controllers\TicketCategoryController::class, 'edit'])->name('ticket-categories.edit');
-        Route::put('/{event}/ticket-categories/{category}', [\App\Http\Controllers\TicketCategoryController::class, 'update'])->name('ticket-categories.update');
-        Route::delete('/{event}/ticket-categories/{category}', [\App\Http\Controllers\TicketCategoryController::class, 'destroy'])->name('ticket-categories.destroy');
+        Route::get('/{event}/ticket-categories', [TicketCategoryController::class, 'index'])->name('ticket-categories.index');
+        Route::get('/{event}/ticket-categories/create', [TicketCategoryController::class, 'create'])->name('ticket-categories.create');
+        Route::post('/{event}/ticket-categories', [TicketCategoryController::class, 'store'])->name('ticket-categories.store');
+        Route::get('/{event}/ticket-categories/{category}/edit', [TicketCategoryController::class, 'edit'])->name('ticket-categories.edit');
+        Route::put('/{event}/ticket-categories/{category}', [TicketCategoryController::class, 'update'])->name('ticket-categories.update');
+        Route::delete('/{event}/ticket-categories/{category}', [TicketCategoryController::class, 'destroy'])->name('ticket-categories.destroy');
     });
 });
 
