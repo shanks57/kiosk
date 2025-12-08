@@ -343,7 +343,7 @@ export const AttendanceList = (props: AttendancePageProps) => {
     });
 
     return (
-        <div>
+        <div className="space-y-4">
             <Card className="w-sm p-4 shadow-none">
                 <div className="relative flex items-center gap-4">
                     <img

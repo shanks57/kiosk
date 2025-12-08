@@ -10,28 +10,6 @@ use Inertia\Inertia;
 
 class TicketCategoryController extends Controller
 {
-    public function index(Event $event)
-    {
-        $user = Auth::user();
-        $organizer = $user->organizer;
-
-        $categories = TicketCategory::where('event_id', $event->id)->get();
-
-        return Inertia::render('organizer/events/ticket-categories/index', [
-            'event' => $event,
-            'categories' => $categories,
-        ]);
-    }
-
-    public function create(Event $event)
-    {
-        $user = Auth::user();
-        $organizer = $user->organizer;
-
-        return Inertia::render('organizer/events/ticket-categories/create', [
-            'event' => $event,
-        ]);
-    }
 
     public function store(Request $request, Event $event)
     {
@@ -48,18 +26,7 @@ class TicketCategoryController extends Controller
 
         TicketCategory::create($validated);
 
-        return redirect()->route('organizer.events.ticket-categories.index', $event)->with('success', 'Ticket category created');
-    }
-
-    public function edit(Event $event, TicketCategory $category)
-    {
-        $user = Auth::user();
-        $organizer = $user->organizer;
-
-        return Inertia::render('organizer/events/ticket-categories/edit', [
-            'event' => $event,
-            'category' => $category,
-        ]);
+        return redirect()->back()->with('success', 'Ticket category created');
     }
 
     public function update(Request $request, Event $event, TicketCategory $category)
@@ -75,7 +42,7 @@ class TicketCategoryController extends Controller
 
         $category->update($validated);
 
-        return redirect()->route('organizer.events.ticket-categories.index', $event)->with('success', 'Ticket category updated');
+        return redirect()->back()->with('success', 'Ticket category updated');
     }
 
     public function destroy(Event $event, TicketCategory $category)

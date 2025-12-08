@@ -35,8 +35,6 @@ export default function TicketCategoryModal({
         quota: category?.quota ?? '',
     });
 
-    console.log(category?.price);
-
     useEffect(() => {
         setData({
             name: category?.name || '',
@@ -53,20 +51,24 @@ export default function TicketCategoryModal({
                 `/dashboard/events/${eventId}/ticket-categories/${category.id}`,
                 {
                     onSuccess: () => {
-                        reset();
                         onOpenChange(false);
                         toast('Ticket category updated');
-                        onSuccess?.();
+                        reset();
+                    },
+                    onError: () => {
+                        toast('Error updating ticket category');
                     },
                 },
             );
         } else {
             post(`/dashboard/events/${eventId}/ticket-categories`, {
                 onSuccess: () => {
-                    reset();
                     onOpenChange(false);
                     toast('Ticket category created');
-                    onSuccess?.();
+                    reset();
+                },
+                onError: () => {
+                    toast('Error creating ticket category');
                 },
             });
         }
@@ -88,6 +90,7 @@ export default function TicketCategoryModal({
                         <Label htmlFor="name">Name</Label>
                         <Input
                             id="name"
+                            placeholder="Enter ticket category name"
                             value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
                             required
@@ -102,6 +105,8 @@ export default function TicketCategoryModal({
                     <div>
                         <Label htmlFor="price">Price</Label>
                         <Input
+                            type="number"
+                            placeholder="Enter ticket category price"
                             id="price"
                             value={data.price}
                             onChange={(e) => setData('price', e.target.value)}
@@ -117,6 +122,8 @@ export default function TicketCategoryModal({
                     <div>
                         <Label htmlFor="quota">Quota</Label>
                         <Input
+                            type="number"
+                            placeholder="Enter ticket category quota"
                             id="quota"
                             value={String(data.quota)}
                             onChange={(e) => setData('quota', e.target.value)}

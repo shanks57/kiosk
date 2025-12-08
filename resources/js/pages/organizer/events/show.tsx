@@ -1,18 +1,9 @@
-import TicketCategoryModal from '@/components/modals/ticket-category-modal';
 import { AttendanceList } from '@/components/organism/attendance-list';
+import { EventForm } from '@/components/organism/event-form';
+import { TicketCategoryList } from '@/components/organism/ticket-category-list';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
-import { formatRupiah } from '@/lib/utils';
 import {
     BreadcrumbItem,
     EventType,
@@ -20,13 +11,10 @@ import {
     ParticipantType,
     TicketCategoryType,
 } from '@/types';
-import { Head, router } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import { TabsContent } from '@radix-ui/react-tabs';
-import axios from 'axios';
 import dayjs from 'dayjs';
-import { Calendar, Edit, PhoneCall, Plus, Trash } from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'sonner';
+import { Calendar, PhoneCall } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -47,10 +35,7 @@ export type AttendancePageProps = {
 
 export default function AttendancePage(props: AttendancePageProps) {
     const { event, ticketCategories, participants } = props;
-    const [modalOpen, setModalOpen] = useState(false);
-    const [selectedCategory, setSelectedCategory] =
-        useState<TicketCategoryType | null>(null);
-    console.log(ticketCategories);
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Organizer Dashboard" />
@@ -79,8 +64,8 @@ export default function AttendancePage(props: AttendancePageProps) {
                 </div>
 
                 {/* Tabs */}
-                <Tabs defaultValue="attendance" className="border-b p-0">
-                    <TabsList className="bg-transparent p-0">
+                <Tabs defaultValue="attendance" className="p-0">
+                    <TabsList className="flex w-full justify-start rounded-none border-b-2 bg-transparent p-0">
                         <TabsTrigger value="attendance">Attendance</TabsTrigger>
                         <TabsTrigger value="event">Event Detail</TabsTrigger>
                         <TabsTrigger value="tickets">Tickets</TabsTrigger>
@@ -88,117 +73,11 @@ export default function AttendancePage(props: AttendancePageProps) {
                     <TabsContent value="attendance">
                         <AttendanceList {...props} />
                     </TabsContent>
+                    <TabsContent value="event">
+                        <EventForm {...props} />
+                    </TabsContent>
                     <TabsContent value="tickets">
-                        <div className="mx-auto px-2">
-                            <div className="mb-4 flex items-center justify-between">
-                                <div>
-                                    <h2 className="text-lg font-medium">
-                                        Ticket Categories
-                                    </h2>
-                                    <p className='text-sm text-foreground/50'>
-                                        Ticket categories are used to define the
-                                        price and quota of tickets for the
-                                        event.
-                                    </p>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        size="sm"
-                                        onClick={() => {
-                                            setSelectedCategory(null);
-                                            setModalOpen(true);
-                                        }}
-                                    >
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        Add Category
-                                    </Button>
-                                </div>
-                            </div>
-
-                            <Card className="rounded-sm px-2 py-0 shadow-none">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Name</TableHead>
-                                            <TableHead>Price</TableHead>
-                                            <TableHead>Quota</TableHead>
-                                            <TableHead>Actions</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {ticketCategories.map((c) => (
-                                            <TableRow key={c.id}>
-                                                <TableCell>{c.name}</TableCell>
-                                                <TableCell>
-                                                    Rp
-                                                    {formatRupiah(c.price ?? 0)}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {c.quota ?? '-'}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div className="flex items-center gap-2">
-                                                        <Button
-                                                            size="sm"
-                                                            variant="ghost"
-                                                            onClick={() => {
-                                                                setSelectedCategory(
-                                                                    c,
-                                                                );
-                                                                setModalOpen(
-                                                                    true,
-                                                                );
-                                                            }}
-                                                        >
-                                                            <Edit className="h-4 w-4" />
-                                                        </Button>
-                                                        <Button
-                                                            size="sm"
-                                                            variant="destructive"
-                                                            onClick={async () => {
-                                                                if (
-                                                                    !confirm(
-                                                                        'Delete this ticket category?',
-                                                                    )
-                                                                )
-                                                                    return;
-                                                                try {
-                                                                    await axios.delete(
-                                                                        `/dashboard/events/${event.id}/ticket-categories/${c.id}`,
-                                                                    );
-                                                                    toast.success(
-                                                                        'Category deleted',
-                                                                    );
-                                                                    router.reload();
-                                                                } catch (err: any) {
-                                                                    toast.error(
-                                                                        err
-                                                                            .response
-                                                                            ?.data
-                                                                            ?.message ||
-                                                                            'Delete failed',
-                                                                    );
-                                                                }
-                                                            }}
-                                                        >
-                                                            <Trash className="h-4 w-4" />
-                                                        </Button>
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </Card>
-
-                            <TicketCategoryModal
-                                open={modalOpen}
-                                onOpenChange={(v) => setModalOpen(v)}
-                                eventId={event.id as number}
-                                category={selectedCategory}
-                                // onSuccess={() => router.reload()}
-                            />
-                        </div>
+                        <TicketCategoryList {...props} />
                     </TabsContent>
                 </Tabs>
             </div>
