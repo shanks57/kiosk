@@ -85,7 +85,7 @@ export default function Welcome({
 
                 {/* Create Event Banner */}
                 <div className="flex w-full items-center justify-center py-10">
-                    <div className="grid h-64 w-full max-w-7xl grid-cols-4 lg:col-span-3 overflow-hidden rounded-2xl bg-gradient-to-r from-primary/50 to-primary shadow-lg">
+                    <div className="grid h-64 w-full max-w-7xl grid-cols-4 lg:col-span-3 overflow-hidden rounded-2xl bg-gradient-to-r from-primary/50 to-primary dark:from-primary-foreground/50 dark:to-primary-foreground shadow-lg">
                         {/* Left Illustration Placeholder */}
                         <div className="flex col-span-2 lg:col-span-2 items-center justify-center p-6">
                             <div className="bg-opacity-30 h-48 w-48 rounded-xl bg-blue-200"></div>

@@ -11,6 +11,7 @@ use App\Http\Controllers\ParticipantController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\LotteryController;
 use App\Http\Controllers\TicketCategoryController;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -35,6 +36,9 @@ Route::post('/checkin', [CheckinController::class, 'check'])->name('checkin.chec
 
 Route::get('/invitation', [InvitationController::class, 'index'])->name('invitation.index');
 Route::get('/invitation/{invitation}', [InvitationController::class, 'show'])->name('invitation.show');
+
+Route::get('/lottery', [LotteryController::class, 'index'])->name('lottery.index');
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');

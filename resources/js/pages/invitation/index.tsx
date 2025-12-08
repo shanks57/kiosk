@@ -45,8 +45,8 @@ export default function Invitation() {
         <div className="flex min-h-screen w-full flex-col bg-black">
             <Toaster />
 
-            <div className="flex items-center justify-between bg-white p-4">
-                <h4 className="text-xs font-medium">
+            <div className="flex items-center justify-between bg-white p-4 dark:bg-primary">
+                <h4 className="text-xs font-medium dark:text-secondary">
                     This Ticketing System <br /> Powered by
                 </h4>
                 <Link href="/">
@@ -69,7 +69,7 @@ export default function Invitation() {
             </div>
             <div className="fixed inset-x-0 right-0 bottom-0 left-0 bg-white p-4">
                 <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-bold">Make a reservation</h4>
+                    <h4 className="text-sm font-bold dark:text-secondary">Make a reservation</h4>
                     <Link href="/invitation/detail">
                         <Button>Reserve Now</Button>
                     </Link>

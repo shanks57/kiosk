@@ -6,12 +6,12 @@ import { ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
 const participants = ['John Doe', 'John Doe 2', 'John Doe 3'];
-export default function InvitationDetail() {
+export default function LotteryDetail() {
     return (
         <div className="flex min-h-screen w-full flex-col bg-foreground/5">
             <Toaster />
             <div className="flex items-center justify-between bg-white p-4">
-                <h4 className="text-xs font-medium dark:text-secondary">
+                <h4 className="text-xs font-medium">
                     This Ticketing System <br /> Powered by
                 </h4>
                 <Link href="/">
@@ -23,7 +23,7 @@ export default function InvitationDetail() {
                 </Link>
             </div>
             <div className="mx-auto w-full max-w-md flex-col gap-y-4 pb-18">
-                <div className="mx-auto min-h-screen w-full space-y-3 dark:text-secondary">
+                <div className="mx-auto min-h-screen w-full space-y-3">
                     {/* Header */}
 
                     {/* Company Info */}
@@ -99,7 +99,7 @@ export default function InvitationDetail() {
             </div>
             <div className="fixed inset-x-0 right-0 bottom-0 left-0 border-t bg-white p-4">
                 <div className="flex items-center justify-between">
-                    <Button onClick={() => toast('Not Attend')} variant="ghost" className='dark:text-secondary dark:hover:bg-primary'>
+                    <Button onClick={() => toast('Not Attend')} variant="ghost">
                         Not Attend
                     </Button>
                     <Button onClick={() => toast('Attend')}>Attend</Button>

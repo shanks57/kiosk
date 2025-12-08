@@ -43,17 +43,17 @@ export default function PublicHeaderLayout({}: PropsWithChildren<{
                         {!auth.user ? (
                             <>
                                 <Link href="/register">
-                                    <Button variant="ghost">Daftar</Button>
+                                    <Button className='dark:text-gray-700 dark:hover:bg-primary' variant="ghost">Daftar</Button>
                                 </Link>
                                 <Link href="/login">
-                                    <Button className="bg-primary text-white hover:bg-primary/90">
+                                    <Button className="bg-primary text-white hover:bg-primary/90 dark:bg-primary-foreground">
                                         Masuk
                                     </Button>
                                 </Link>
                             </>
                         ) : (
                             <Link href="/dashboard">
-                                <Button className="bg-primary text-white hover:bg-primary/90 dark:bg-blue-500">
+                                <Button className="bg-primary text-white hover:bg-primary/90 dark:bg-primary-foreground">
                                     Dashboard
                                 </Button>
                             </Link>
