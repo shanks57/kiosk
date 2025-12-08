@@ -31,7 +31,7 @@ export default function Welcome({
             {isFocused && (
                 <div className="fixed inset-0 z-10 bg-black opacity-50 transition-opacity duration-300 ease-in"></div>
             )}
-            <div className="min-h-screen w-full bg-white text-gray-900">
+            <div className="min-h-screen w-full bg-white dark:bg-black/90 text-gray-900 dark:text-gray-500">
                 {/* Hero Section */}
                 <section className="flex min-h-[374px] flex-col items-center justify-center bg-primary bg-gradient-to-b bg-[url('/images/hero.png')] from-primary to-primary/80 bg-cover bg-[center_35%] pt-28 pb-20 text-white">
                     <div className="mx-auto my-auto max-w-7xl px-6 text-center">
@@ -85,15 +85,15 @@ export default function Welcome({
 
                 {/* Create Event Banner */}
                 <div className="flex w-full items-center justify-center py-10">
-                    <div className="grid h-64 w-full max-w-7xl grid-cols-2 overflow-hidden rounded-2xl bg-gradient-to-r from-primary/50 to-primary shadow-lg">
+                    <div className="grid h-64 w-full max-w-7xl grid-cols-4 lg:col-span-3 overflow-hidden rounded-2xl bg-gradient-to-r from-primary/50 to-primary shadow-lg">
                         {/* Left Illustration Placeholder */}
-                        <div className="flex items-center justify-center p-6">
+                        <div className="flex col-span-2 lg:col-span-2 items-center justify-center p-6">
                             <div className="bg-opacity-30 h-48 w-48 rounded-xl bg-blue-200"></div>
                         </div>
 
                         {/* Right Content */}
-                        <div className="flex flex-col justify-center space-y-4 p-10 text-white">
-                            <h1 className="text-4xl leading-tight">
+                        <div className="flex col-span-2 lg:col-span-2 flex-col justify-center space-y-4 p-4 lg:p-10 text-white">
+                            <h1 className="text-xl leading-tight lg:text-4xl">
                                 Start your own event.
                                 <br />
                                 and Manage it Right Now.

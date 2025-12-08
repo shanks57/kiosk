@@ -9,8 +9,8 @@ export default function PublicHeaderLayout({}: PropsWithChildren<{
     const { auth } = usePage<SharedData>().props;
     return (
         <>
-            <header className="z-50 w-full border-b border-gray-200 bg-white backdrop-blur-md">
-                <div className="bg-primary">
+            <header className="z-50 w-full border-b border-gray-200 bg-white dark:bg-slate-300">
+                <div className="bg-primary dark:bg-black/90">
                     <nav className="mx-auto flex max-w-7xl items-center justify-end gap-8 px-6 py-3">
                         <Link
                             href="/events"
@@ -53,7 +53,7 @@ export default function PublicHeaderLayout({}: PropsWithChildren<{
                             </>
                         ) : (
                             <Link href="/dashboard">
-                                <Button className="bg-primary text-white hover:bg-primary/90">
+                                <Button className="bg-primary text-white hover:bg-primary/90 dark:bg-blue-500">
                                     Dashboard
                                 </Button>
                             </Link>

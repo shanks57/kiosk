@@ -17,11 +17,11 @@ export default function Events(props: { events: PaginationType<EventType> }) {
             </Head>
             <PublicHeaderLayout />
 
-            <div className="min-h-screen w-full bg-white text-gray-900">
+            <div className="min-h-screen w-full bg-white dark:bg-black/90 text-gray-900">
                 {/* Hero Section */}
 
                 {/* Nearest Events */}
-                <section className="mx-auto max-w-7xl px-6 py-16">
+                <section className="mx-auto max-w-7xl px-6 py-16 bg-white dark:bg-black/90 text-gray-900 dark:text-gray-500">
                     <div className="mb-6 flex items-center justify-between">
                         <h2 className="text-xl font-semibold">
                             The <span className="text-primary">nearest</span>{' '}
@@ -48,7 +48,7 @@ export default function Events(props: { events: PaginationType<EventType> }) {
                 </section>
 
                 {/* Featured Events */}
-                <section className="mx-auto max-w-7xl px-6 py-16">
+                <section className="mx-auto max-w-7xl px-6 py-16 bg-white dark:bg-black/90 text-gray-900 dark:text-gray-500">
                     <div className="mb-6 flex items-center justify-between">
                         <h2 className="text-xl font-semibold">
                             Featured Event
