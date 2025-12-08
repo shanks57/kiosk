@@ -30,7 +30,7 @@ class ParticipantController extends Controller
         $organizer = $user->organizer;
 
         // Verify organizer owns this event
-        if ($event->organizer_id !== $organizer->id) {
+        if ($event->organizer_id != $organizer->id) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
         // Create or find user by email

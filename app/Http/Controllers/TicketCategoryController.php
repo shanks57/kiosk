@@ -18,7 +18,7 @@ class TicketCategoryController extends Controller
 
         $event = Event::where('id', $eventId)->firstOrFail();
 
-        abort_if($event->organizer_id !== $organizer?->id, 403);
+        abort_if($event->organizer_id != $organizer?->id, 403);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -40,7 +40,7 @@ class TicketCategoryController extends Controller
 
         $event = Event::where('id', $eventId)->firstOrFail();
 
-        abort_if($event->organizer_id !== $organizer?->id, 403);
+        abort_if($event->organizer_id != $organizer?->id, 403);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -60,7 +60,7 @@ class TicketCategoryController extends Controller
         $user = Auth::user();
         $organizer = $user->organizer;
 
-        abort_if($event->organizer_id !== $organizer?->id, 403);
+        abort_if($event->organizer_id != $organizer?->id, 403);
 
         $category = TicketCategory::where('id', $ticketId)->firstOrFail();
         $category->delete();
