@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import PublicLayout from '@/layouts/public-layout';
 import { EventType, type SharedData } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { ArrowUpRight, Search } from 'lucide-react';
 import { useState } from 'react';
 
@@ -84,25 +84,31 @@ export default function Welcome({
                 </section>
 
                 {/* Create Event Banner */}
-                <section className="mx-auto max-w-7xl px-6 py-10">
-                    <div className="flex items-center justify-between rounded-2xl bg-primary p-10 text-white shadow-lg">
-                        <div>
-                            <h2 className="mb-3 text-2xl font-semibold">
+                <div className="flex w-full items-center justify-center py-10">
+                    <div className="grid h-64 w-full max-w-7xl grid-cols-2 overflow-hidden rounded-2xl bg-gradient-to-r from-primary/50 to-primary shadow-lg">
+                        {/* Left Illustration Placeholder */}
+                        <div className="flex items-center justify-center p-6">
+                            <div className="bg-opacity-30 h-48 w-48 rounded-xl bg-blue-200"></div>
+                        </div>
+
+                        {/* Right Content */}
+                        <div className="flex flex-col justify-center space-y-4 p-10 text-white">
+                            <h1 className="text-4xl leading-tight">
                                 Start your own event.
                                 <br />
                                 and Manage it Right Now.
-                            </h2>
-                            <Button className="bg-white text-primary hover:bg-gray-100">
-                                Create Event
-                            </Button>
+                            </h1>
+                            <Link href="/dashboard/events/create">
+                                <Button
+                                    variant="secondary"
+                                    className="w-fit text-primary"
+                                >
+                                    Create Event
+                                </Button>
+                            </Link>
                         </div>
-                        <img
-                            src="/banner-guy.png"
-                            alt="banner"
-                            className="hidden w-48 md:block"
-                        />
                     </div>
-                </section>
+                </div>
 
                 {/* Featured Events */}
                 <section className="mx-auto max-w-7xl px-6 py-16">

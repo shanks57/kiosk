@@ -23,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'company_id',
     ];
 
     /**
@@ -59,6 +60,20 @@ class User extends Authenticatable
     public function organizer()
     {
         return $this->hasOne(Organizer::class);
+    }
+
+    /**
+     * If a user belongs to an organizer (membership), use this relation.
+     * This is different from the organizer profile (owner) relation above.
+     */
+    public function organization()
+    {
+        return $this->belongsTo(Organizer::class, 'organizer_id');
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 
     public function hasRole(string $role): bool

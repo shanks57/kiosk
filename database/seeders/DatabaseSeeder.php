@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\Models\Organizer;
 use App\Models\Event;
 use App\Models\TicketCategory;
+use App\Models\Company;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -43,9 +44,26 @@ class DatabaseSeeder extends Seeder
         // 3. Create organizer profile for organizer users
         $this->createOrganizerProfile($organizerUser);
 
+        // 3b. Create a sample company and attach to normal user
+        $company = Company::firstOrCreate([
+            'name' => 'Acme Corporation',
+        ], [
+            'company_logo' => '/images/hero.png',
+        ]);
+
+        if ($normalUser && ! $normalUser->company) {
+            $normalUser->company()->associate($company);
+            $normalUser->save();
+        }
+
         // 4. Create a sample event for the organizer and ticket categories
         $organizer = $organizerUser->organizer;
         if ($organizer) {
+            // Associate normal user as a member of this organizer (optional)
+            if ($normalUser && ! $normalUser->organization) {
+                $normalUser->organization()->associate($organizer);
+                $normalUser->save();
+            }
             $event = Event::firstOrCreate([
                 'organizer_id' => $organizer->id,
                 'title' => 'Sample Conference 2026',

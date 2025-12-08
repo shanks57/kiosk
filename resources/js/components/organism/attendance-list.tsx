@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/table';
 import { AttendancePageProps } from '@/pages/organizer/events/show';
 import { ParticipantType } from '@/types';
+import { Link } from '@inertiajs/react';
 import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
 import {
     ColumnDef,
@@ -351,7 +352,7 @@ export const AttendanceList = (props: AttendancePageProps) => {
                         alt="presence"
                         className="mb-2 w-16"
                     />
-                    <div>
+                    <Link href={`/dashboard/events/${event.id}`}>
                         <h2 className="text-base text-foreground/50">
                             Presence Ticket
                         </h2>
@@ -361,7 +362,7 @@ export const AttendanceList = (props: AttendancePageProps) => {
                             </span>{' '}
                             / 1.800
                         </p>
-                    </div>
+                    </Link>
                     <MessageCircleQuestion
                         size={20}
                         className="absolute top-0 right-0 text-foreground/70"

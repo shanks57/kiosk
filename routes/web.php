@@ -10,6 +10,7 @@ use App\Http\Controllers\OrganizerEventController;
 use App\Http\Controllers\ParticipantController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CheckinController;
+use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\TicketCategoryController;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -31,6 +32,9 @@ Route::get('/checkout/{id}', [CheckoutController::class, 'show'])->name('checkou
 Route::get('/checkin/scan', [CheckinController::class, 'scan'])->name('checkin.scan');
 Route::get('/checkin/manual', [CheckinController::class, 'manual'])->name('checkin.manual');
 Route::post('/checkin', [CheckinController::class, 'check'])->name('checkin.check');
+
+Route::get('/invitation', [InvitationController::class, 'index'])->name('invitation.index');
+Route::get('/invitation/{invitation}', [InvitationController::class, 'show'])->name('invitation.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
