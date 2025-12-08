@@ -71,12 +71,13 @@ class OrganizerEventController extends Controller
     /**
      * Display the specified event.
      */
-    public function show(Event $event)
+    public function show($eventId)
     {
         $user = Auth::user();
         $organizer = $user->organizer;
+        $event = Event::where('id', $eventId)->firstOrFail();
 
-        // abort_if($event->organizer_id !== $organizer?->id, 403);
+        abort_if($event->organizer_id !== $organizer?->id, 403);
 
         $event->load(['venue', 'sections.seats', 'organizer.user', 'ticketCategories']);
         $ticketCategories = TicketCategory::where('event_id', $event->id)->get();
@@ -98,10 +99,11 @@ class OrganizerEventController extends Controller
     /**
      * Show the form for editing the specified event.
      */
-    public function edit(Event $event)
+    public function edit($eventId)
     {
         $user = Auth::user();
         $organizer = $user->organizer;
+        $event = Event::where('id', $eventId)->firstOrFail();
 
         abort_if($event->organizer_id !== $organizer?->id, 403);
 
@@ -115,10 +117,12 @@ class OrganizerEventController extends Controller
     /**
      * Update the specified event in storage.
      */
-    public function update(Request $request, Event $event)
+    public function update(Request $request, $eventId)
     {
         $user = $request->user();
         $organizer = $user->organizer;
+
+        $event = Event::where('id', $eventId)->firstOrFail();
 
         abort_if($event->organizer_id !== $organizer?->id, 403);
 
