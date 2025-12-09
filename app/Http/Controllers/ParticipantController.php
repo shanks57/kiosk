@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
+use function Symfony\Component\String\b;
+
 class ParticipantController extends Controller
 {
     /**
@@ -58,10 +60,7 @@ class ParticipantController extends Controller
             'price' => 0,
         ]);
 
-        return response()->json([
-            'message' => 'Participant added successfully',
-            'participant' => $participant,
-        ], 201);
+        return redirect()->back()->with('success', 'Participant added successfully');
     }
 
     /**
@@ -85,17 +84,23 @@ class ParticipantController extends Controller
         ]);
     }
 
-    public function destroy($eventId, $id)
+    public function destroy($eventId, $orderId)
     {
+        $user = Auth::user();
+        $organizer = $user->organizer;
+        $event = Event::where('id', $eventId)->firstOrFail();
 
-        $participant = OrderItem::where('id', $id)->firstOrFail();
+        abort_if($event->organizer_id != $organizer?->id, 403);
+
+        $participant = OrderItem::where('id', $orderId)->firstOrFail();
+
+
         $order = $participant->order;
+
         $order->delete();
         $participant->delete();
 
-        return response()->json([
-            'message' => 'Participant deleted successfully',
-        ], 200);
+        return redirect()->back()->with('success', 'Participant deleted successfully');
     }
 
     /**

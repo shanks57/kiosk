@@ -9,9 +9,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { TicketCategoryType } from '@/types';
-import { DialogTrigger } from '@radix-ui/react-dialog';
+import { DialogClose, DialogTrigger } from '@radix-ui/react-dialog';
 import axios from 'axios';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import {
     Select,
     SelectContent,
@@ -33,6 +34,7 @@ export function ParticipantModal({
 }: ParticipantModalProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [modalOpen, setModalOpen] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -65,17 +67,21 @@ export function ParticipantModal({
                 phone: '',
                 ticket_category_id: '',
             });
+            toast('Participant added');
+            setModalOpen(false);
+            onSuccess?.();
         } catch (err: any) {
             const msg =
                 err.response?.data?.message || 'Failed to add participant';
             setError(msg);
+            toast(msg);
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <Dialog>
+        <Dialog onOpenChange={(open) => setModalOpen(open)}>
             <DialogTrigger asChild>
                 <Button>Add Participant</Button>
             </DialogTrigger>
@@ -156,13 +162,15 @@ export function ParticipantModal({
                     </div>
 
                     <div className="flex justify-end gap-3 pt-4">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            disabled={loading}
-                        >
-                            Cancel
-                        </Button>
+                        <DialogClose asChild>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                disabled={loading}
+                            >
+                                Cancel
+                            </Button>
+                        </DialogClose>
                         <Button type="submit" disabled={loading}>
                             {loading ? 'Adding...' : 'Add Participant'}
                         </Button>

@@ -14,6 +14,18 @@ export default function PublicFooter() {
                     <a className="hover:underline" href="/help">
                         Help
                     </a>
+                    <span className="mx-2">•</span>
+                    <a className="hover:underline" href="/checkin/scan">
+                        Scan Ticket
+                    </a>
+                    <span className="mx-2">•</span>
+                    <a className="hover:underline" href="/invitation">
+                        Invitation
+                    </a>
+                    <span className="mx-2">•</span>
+                    <a className="hover:underline" href="/lottery">
+                        Lottery
+                    </a>
                 </div>
                 <div>
                     © {new Date().getFullYear()} TRONticket. All rights

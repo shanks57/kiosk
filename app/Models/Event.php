@@ -30,6 +30,11 @@ class Event extends Model
         return $this->hasMany(EventSection::class);
     }
 
+    public function orders()
+    {
+        return $this->hasMany(\App\Models\Order::class);
+    }
+
     public function ticketCategories()
     {
         return $this->hasMany(TicketCategory::class);

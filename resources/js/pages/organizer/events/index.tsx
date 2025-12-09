@@ -1,5 +1,15 @@
 import { Button } from '@/components/ui/button';
 import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
+import {
     Table,
     TableBody,
     TableCell,
@@ -21,8 +31,11 @@ import {
     SortingState,
     useReactTable,
 } from '@tanstack/react-table';
+import axios from 'axios';
+import dayjs from 'dayjs';
 import { Eye, Trash } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -42,14 +55,44 @@ export default function EventsPage(props: {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [filter, setFilter] = useState('');
 
+    const handleDelete = (id: number) => {
+        axios
+            .delete('/dashboard/events/' + id)
+            .then(() => {
+                toast('Event deleted');
+            })
+            .catch((error) => {
+                toast(error.response.data.message);
+            });
+    };
+
     const columns: ColumnDef<EventType>[] = [
         { accessorKey: 'id', header: 'Event Code' },
         { accessorKey: 'title', header: 'Event Name' },
         { accessorKey: 'organizer.company_name', header: 'PIC' },
         { accessorKey: 'organizer.contact_email', header: 'Email' },
         { accessorKey: 'organizer.contact_phone', header: 'No PIC' },
-        { accessorKey: 'participant', header: 'Participant' },
-        { accessorKey: 'date', header: 'Last Check In' },
+        {
+            accessorKey: 'paid_orders_count',
+            header: 'Participant',
+            cell: ({ row }) => {
+                const v: number = row.getValue('paid_orders_count');
+                return (
+                    <span className="flex w-full justify-center text-center text-sm">
+                        {v}
+                    </span>
+                );
+            },
+        },
+        {
+            accessorKey: 'end_time',
+            header: 'Last Check In',
+            cell: ({ row }) => (
+                <span className="text-sm">
+                    {dayjs(row.getValue('end_time')).format('DD MMMM YYYY')}
+                </span>
+            ),
+        },
         {
             accessorKey: '',
             header: 'Status',
@@ -63,7 +106,7 @@ export default function EventsPage(props: {
                                 : 'rounded bg-red-100 px-2 py-1 text-xs text-red-600'
                         }
                     >
-                        {v || "Absence"}
+                        {v || 'Absence'}
                     </span>
                 );
             },
@@ -80,9 +123,41 @@ export default function EventsPage(props: {
                                 <Eye size={16} className="text-gray-500" />
                             </span>
                         </Link>
-                        <span className="text-sm">
-                            <Trash size={16} className="text-gray-500" />
-                        </span>
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <span className="text-sm">
+                                    <Trash
+                                        size={16}
+                                        className="text-gray-500"
+                                    />
+                                </span>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Delete Event?</DialogTitle>
+                                    <DialogDescription>
+                                        Are you sure delete event{' '}
+                                        {row.original.title} ?
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <DialogFooter className="flex justify-end gap-2 p-2">
+                                    <DialogClose asChild>
+                                        <Button type="button" variant="default">
+                                            Cancel
+                                        </Button>
+                                    </DialogClose>
+                                    <Button
+                                        onClick={() =>
+                                            handleDelete(row.original.id)
+                                        }
+                                        type="button"
+                                        variant="ghost"
+                                    >
+                                        Delete
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
                     </div>
                 );
             },

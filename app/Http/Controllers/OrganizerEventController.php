@@ -23,6 +23,14 @@ class OrganizerEventController extends Controller
 
         $events = Event::where('organizer_id', $organizer->id)
             ->with(['sections', 'venue', 'organizer.user'])
+            ->withCount([
+                'orders',
+                'orders as paid_orders_count' => function ($q) {
+                    $q->whereHas('payment', function ($q2) {
+                        $q2->where('status', 'paid');
+                    });
+                },
+            ])
             ->orderBy('start_time', 'desc')
             ->paginate(10)
             ->withQueryString();
@@ -142,11 +150,13 @@ class OrganizerEventController extends Controller
     /**
      * Remove the specified event from storage.
      */
-    public function destroy(Event $event)
+    public function destroy($eventId)
     {
         $user = Auth::user();
         $organizer = $user->organizer;
 
+        $event = Event::where('id', $eventId)->firstOrFail();
+        
         abort_if($event->organizer_id != $organizer?->id, 403);
 
         $event->delete();
