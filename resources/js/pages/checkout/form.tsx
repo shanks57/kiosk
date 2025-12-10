@@ -120,13 +120,9 @@ export default function PaymentPage(
                 ticket_category_id: ticketIds[0].ticket_category_id,
             })
             .then((res) => {
-                if (res.data.success) {
-                    toast.success(res.data.message);
-                    toast.success('Payment successful!');
-                    setTabValue('3');
-                } else {
-                    toast.error(res.data.message);
-                }
+                toast.success(res.data.message);
+                toast.success('Payment successful!');
+                setTabValue('3');
             })
             .catch((err) => {
                 toast.error(err.response.data.message);
