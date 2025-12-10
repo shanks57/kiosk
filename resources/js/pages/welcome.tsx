@@ -33,7 +33,7 @@ export default function Welcome({
             )}
             <div className="min-h-screen w-full bg-white dark:bg-black/90 text-gray-900 dark:text-gray-500">
                 {/* Hero Section */}
-                <section className="flex min-h-[374px] flex-col items-center justify-center bg-primary bg-gradient-to-b bg-[url('/images/hero.png')] from-primary to-primary/80 bg-cover bg-[center_35%] pt-28 pb-20 text-white">
+                <section className="flex min-h-[374px] flex-col items-center justify-center filter hue-rotate-220 brightness-100 bg-primary bg-[url('/images/hero.png')] from-primary to-primary/80 bg-cover bg-[center_35%] pt-28 pb-20 text-white">
                     <div className="mx-auto my-auto max-w-7xl px-6 text-center">
                         <h1 className="mb-4 text-4xl">
                             Discover and book events effortlessly.

@@ -108,7 +108,7 @@ export default function PaymentPage(props: {
                         defaultValue="1"
                         className="mx-auto flex w-full"
                     >
-                        <TabsList className="w-full border-b border-[#D9D9D9] bg-transparent py-5">
+                        <TabsList className="w-full md:overflow-hidden overflow-scroll border-b border-[#D9D9D9] bg-transparent py-5 pl-44 md:pl-0">
                             <TabsTrigger
                                 value="1"
                                 className="group data-[state=active]:border-0"
@@ -308,9 +308,7 @@ export default function PaymentPage(props: {
                                         <div className="space-y-4 p-6">
                                             <div className="space-y-2">
                                                 <h1 className="text-xl leading-tight font-medium">
-                                                    Rich Brian – “Where Is My
-                                                    Head?” 2025 Asia Tour in
-                                                    Singapore
+                                                    {event.title}
                                                 </h1>
                                                 <p className="mt-2 text-base text-foreground/40">
                                                     Kode Pemesanan :{' '}

@@ -10,7 +10,7 @@ import { Head, router } from '@inertiajs/react';
 import dayjs from 'dayjs';
 
 import { Calendar, Info, MapPin } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 type EventDetailProps = {
     event: EventType;
@@ -39,6 +39,11 @@ export default function EventDetail(props: EventDetailProps) {
         });
     };
 
+    const isTicketSelected = useMemo(
+        () => Object.values(tickets).some((v) => v !== 0),
+        [tickets],
+    );
+
     return (
         <PublicLayout>
             <Head title="Event Detail">
@@ -59,9 +64,9 @@ export default function EventDetail(props: EventDetailProps) {
                 <div className="absolute inset-0 bg-black/40"></div>
             </div>
 
-            <div className="relative z-10 mx-auto grid max-w-7xl grid-cols-1 gap-8 px-6 py-10 lg:grid-cols-3">
+            <div className="relative z-10 mx-auto grid max-w-7xl grid-cols-1 gap-8 md:px-6 md:py-10 lg:grid-cols-3">
                 {/* LEFT: EVENT DETAILS */}
-                <div className="lg:col-span-2">
+                <div className="order-2 md:order-1 lg:col-span-2">
                     <div className="p-6">
                         <h1 className="mb-2 text-2xl font-medium">
                             {event.title}
@@ -87,7 +92,7 @@ export default function EventDetail(props: EventDetailProps) {
 
                     {/* Tabs */}
                     <Tabs defaultValue="desc" className="w-full p-6 pt-0">
-                        <TabsList className="mb-4 flex w-full justify-start border-b bg-transparent p-0">
+                        <TabsList className="mb-4 flex w-full justify-start overflow-x-scroll md:overflow-hidden rounded-none border-b bg-transparent p-0">
                             <TabsTrigger className="text-base" value="desc">
                                 Event Description
                             </TabsTrigger>
@@ -161,24 +166,21 @@ export default function EventDetail(props: EventDetailProps) {
 
                         {/* Ticket Card */}
                         <div className="space-y-4">
-                            <TicketCard
-                                title="Regular Pass"
-                                price="Rp150.000"
-                            />
-                            <TicketCard
-                                title="Early Bird Pass"
-                                price="Rp250.000"
-                            />
-                            <TicketCard
-                                title="VIP Experience Pass"
-                                price="Rp450.000"
-                            />
+                            {ticketCategories.map((ticket, i) => (
+                                <TicketCard
+                                    key={i}
+                                    title={ticket?.name || ''}
+                                    price={
+                                        formatRupiah(ticket.price || 0) || ''
+                                    }
+                                />
+                            ))}
                         </div>
                     </div>
                 </div>
                 {/* RIGHT: TICKET PURCHASE */}
 
-                <div className="space-y-4">
+                <div className="order-1 space-y-4 px-6 md:order-2">
                     {/* Punch Holes */}
 
                     <Card className="relative z-50 -mt-55 overflow-hidden rounded-xl border-none p-0 shadow-none">
@@ -187,7 +189,7 @@ export default function EventDetail(props: EventDetailProps) {
                         <CardContent className="p-0">
                             <form
                                 onSubmit={handleSubmit}
-                                className="space-y-4 border"
+                                className="space-y-4 rounded-xl border"
                             >
                                 {/* Event Preview */}
                                 <div className="h-45 w-full overflow-hidden rounded-t-lg">
@@ -238,6 +240,7 @@ export default function EventDetail(props: EventDetailProps) {
                                 </div>
                                 <div className="p-2 pt-0">
                                     <Button
+                                        disabled={!isTicketSelected}
                                         type="submit"
                                         className="w-full cursor-pointer bg-primary py-6 text-lg text-white hover:bg-primary/90"
                                     >
