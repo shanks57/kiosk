@@ -1,6 +1,8 @@
+import { TicketCard } from '@/components/molecules/ticket/ticket-card';
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { formatRupiah } from '@/lib/utils';
+import { OrderType, SharedData, type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -14,13 +16,31 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function UserDashboard() {
+export default function UserDashboard(
+    props: SharedData & {
+        tickets: OrderType[];
+    },
+) {
+    const { tickets } = props;
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="User Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <h1 className="text-2xl font-bold">My Tickets</h1>
+
                 <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+                    {tickets.map((ticket, i) => (
+                        <TicketCard
+                            key={i}
+                            qrCode={ticket?.items?.[0].category?.name || ''}
+                            title={ticket?.items?.[0].category?.name || ''}
+                            price={
+                                formatRupiah(ticket?.items?.[0].price || 0) ||
+                                ''
+                            }
+                            description={ticket.event?.description || ''}
+                        />
+                    ))}
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
                     </div>

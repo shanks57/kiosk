@@ -64,6 +64,44 @@ class ParticipantController extends Controller
     }
 
     /**
+     * User register to event.
+     */
+    public function registerToEvent(Request $request, $eventId)
+    {
+        $event = Event::find($eventId);
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|email',
+            'phone' => 'nullable|string|max:20',
+            'ticket_category_id' => 'required|exists:ticket_categories,id',
+        ]);
+
+        // Verify organizer owns this event
+        // if ($event->organizer_id != $user->organizer->id) {
+        //     return response()->json(['error' => 'Unauthorized'], 403);
+        // }
+
+        // Create order
+        $order = Order::create([
+            'user_id' => $user->id,
+            'event_id' => $event->id,
+            'status' => 'paid',
+            'total_amount' => 0,
+        ]);
+
+        // Create order item
+        OrderItem::create([
+            'order_id' => $order->id,
+            'ticket_category_id' => $validated['ticket_category_id'],
+            'price' => 0,
+        ]);
+
+        return redirect()->back()->with('success', 'Participant registered successfully');
+    }
+
+    /**
      * Display participants for an event.
      */
     public function index(Event $event)

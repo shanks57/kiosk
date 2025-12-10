@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\TicketCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class CheckoutController extends Controller
@@ -29,7 +30,8 @@ class CheckoutController extends Controller
 
     public function event(Request $request)
     {
-
+        $user = Auth::user();
+ 
         $id = $request->input('event_id');
         $ticket = $request->input('tickets');
 

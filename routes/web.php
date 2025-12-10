@@ -22,11 +22,6 @@ Route::get('/', [LandingController::class, 'index'])->name('welcome');
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
 Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
 
-// Checkout routes (public)
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/event-checkout', [CheckoutController::class, 'event'])->name('checkout.event');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
-Route::get('/checkout/{id}', [CheckoutController::class, 'show'])->name('checkout.show');
 
 // Checkin (public pages for scanner and manual code input)
 
@@ -46,6 +41,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Route::get('dashboard/superadmin', [DashboardController::class, 'dashboardSuperadmin'])->name('dashboard.superadmin');
     // Route::get('dashboard/organizer', [DashboardController::class, 'dashboardOrganizer'])->name('dashboard.organizer');
     // Route::get('dashboard/user', [DashboardController::class, 'dashboardUser'])->name('dashboard.user');
+
+    // Checkout routes
+    
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/event-checkout', [CheckoutController::class, 'event'])->name('checkout.event');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/checkout/{id}', [CheckoutController::class, 'show'])->name('checkout.show');
+
+    Route::post('/checkout/{id}/register', [ParticipantController::class, 'registerToEvent'])->name('checkout.registerToEvent');
 
     Route::get('/dashboard/events', [EventDashboardController::class, 'index'])->name('dashboard.events');
 

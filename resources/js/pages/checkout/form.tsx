@@ -4,18 +4,22 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PublicLayout from '@/layouts/public-layout';
 import { cn } from '@/lib/utils';
-import { EventType, TicketCategoryType } from '@/types';
+import { EventType, SharedData, TicketCategoryType } from '@/types';
+import { Link } from '@inertiajs/react';
+import axios from 'axios';
 import dayjs from 'dayjs';
 import { Calendar, ChevronDown, ChevronRight, Download } from 'lucide-react';
 import { useState } from 'react';
 import QRCode from 'react-qr-code';
 import { toast } from 'sonner';
 
-export default function PaymentPage(props: {
-    ticketCategories: TicketCategoryType[];
-    event: EventType;
-}) {
-    const { event } = props;
+export default function PaymentPage(
+    props: SharedData & {
+        ticketCategories: TicketCategoryType[];
+        event: EventType;
+    },
+) {
+    const { event, auth } = props;
     const [selectedMethod, setSelectedMethod] = useState('qris');
     const [tabValue, setTabValue] = useState('1');
 
@@ -99,6 +103,36 @@ export default function PaymentPage(props: {
         setTabValue('2');
     };
 
+    const handlePaid = () => {
+        console.log(tickets, 'TICKETS');
+        const ticketIds = Object.entries(tickets).map(
+            ([ticketName, ticketCount]) => ({
+                ticket_category_id: ticketCategories.find(
+                    (tc) => tc.name === ticketName,
+                )?.id,
+                count: ticketCount,
+            }),
+        );
+        axios
+            .post(`/checkout/${eventId}/register`, {
+                name: auth.user.name,
+                email: auth.user.email,
+                ticket_category_id: ticketIds[0].ticket_category_id,
+            })
+            .then((res) => {
+                if (res.data.success) {
+                    toast.success(res.data.message);
+                    toast.success('Payment successful!');
+                    setTabValue('3');
+                } else {
+                    toast.error(res.data.message);
+                }
+            })
+            .catch((err) => {
+                toast.error(err.response.data.message);
+            });
+    };
+
     return (
         <PublicLayout title="Payment">
             <div className="relative flex w-full flex-col items-center justify-center">
@@ -108,7 +142,7 @@ export default function PaymentPage(props: {
                         defaultValue="1"
                         className="mx-auto flex w-full"
                     >
-                        <TabsList className="w-full md:overflow-hidden overflow-scroll border-b border-[#D9D9D9] bg-transparent py-5 pl-44 md:pl-0">
+                        <TabsList className="w-full overflow-scroll border-b border-[#D9D9D9] bg-transparent py-5 pl-44 md:overflow-hidden md:pl-0">
                             <TabsTrigger
                                 value="1"
                                 className="group data-[state=active]:border-0"
@@ -285,7 +319,7 @@ export default function PaymentPage(props: {
 
                                         {/* Confirm Button */}
                                         <Button
-                                            onClick={() => setTabValue('3')}
+                                            onClick={() => handlePaid()}
                                             className="w-full rounded-sm bg-primary py-5 text-sm text-white"
                                         >
                                             Already made a payment? Confirm
@@ -332,7 +366,7 @@ export default function PaymentPage(props: {
                                                     Guest
                                                 </span>
                                                 <span className="font-medium">
-                                                    Andi Setiawan
+                                                    {auth.user.name}
                                                 </span>
                                             </div>
 
@@ -357,14 +391,16 @@ export default function PaymentPage(props: {
                                         </div>
 
                                         <div className="flex gap-2 border-t p-4">
-                                            <Button
-                                                variant="outline"
-                                                className="w-full"
-                                                size="lg"
-                                            >
-                                                <Download />
-                                                Add to Calendar
-                                            </Button>
+                                            <Link href="/dashboard">
+                                                <Button
+                                                    variant="outline"
+                                                    className="w-full"
+                                                    size="lg"
+                                                >
+                                                    <Download />
+                                                    Add to Calendar
+                                                </Button>
+                                            </Link>
                                             <Button
                                                 className="w-full"
                                                 size="lg"

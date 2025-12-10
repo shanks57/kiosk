@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
+use App\Models\TicketCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -22,7 +24,12 @@ class DashboardController extends Controller
             }
         }
         // default to end user dashboard
-        return Inertia::render('dashboards/UserDashboard');
+
+        $tickets = Order::with(['user', 'event', 'items.category'])->where('user_id', $user->id)->get();
+        $ticketCategories = TicketCategory::all();
+        return Inertia::render('dashboards/UserDashboard', [
+            'tickets' => $tickets
+        ]);
     }
 
     public function dashboardSuperadmin()
