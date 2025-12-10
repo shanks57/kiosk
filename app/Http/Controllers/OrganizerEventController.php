@@ -93,7 +93,7 @@ class OrganizerEventController extends Controller
         $participants = OrderItem::whereHas('order', function ($q) use ($event) {
             $q->where('event_id', $event->id);
         })
-            ->with(['order.user', 'seat', 'category'])
+            ->with(['order.user.company', 'seat', 'category'])
             ->paginate(20)
             ->withQueryString();
 

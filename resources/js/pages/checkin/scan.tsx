@@ -6,7 +6,7 @@ import {
     DialogFooter,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import axios from 'axios';
 import { ChevronDown } from 'lucide-react';
@@ -19,13 +19,13 @@ export default function ScanPage() {
     const [loading, setLoading] = useState(false);
     const [showScan, setShowScan] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async (ticketCode: string) => {
         setLoading(true);
         try {
-            const res = await axios.post('/checkin', { code });
+            const res = await axios.post('/checkin', { code: ticketCode });
             toast.success(res.data.message || 'Checked in successfully');
             setCode('');
+            router.visit('/invitation');
         } catch (err: any) {
             toast.error(err.response?.data?.message || 'Check-in failed');
         } finally {
@@ -38,8 +38,8 @@ export default function ScanPage() {
             <div className="relative mx-auto h-screen w-full max-w-md bg-black">
                 {showScan && (
                     <Scanner
-                        onScan={(result) => console.log(result)}
-                        onError={(error) => console.log(error)}
+                        onScan={(result) => handleSubmit(result[0].rawValue)}
+                        onError={(error) => toast(error?.toString())}
                     />
                 )}
                 <div className="absolute bottom-1/5 left-1/2 flex w-full -translate-x-1/2 -translate-y-[80%] px-4">
@@ -151,9 +151,9 @@ export default function ScanPage() {
                     </Dialog>
                 </div>
 
-                <div className="absolute bottom-0 grid h-[20vh] w-full grid-cols-2 bg-white px-6 py-4">
+                <div className="absolute bottom-0 grid h-[30vh] w-full grid-cols-2 bg-white px-6 py-4">
                     <div className="m-auto flex h-full flex-col justify-between gap-3">
-                        <p className="text-black text-xs">
+                        <p className="text-xs text-black">
                             Masukkan kode secara manual jika{' '}
                             <strong>QR Code tidak terbaca.</strong>
                         </p>

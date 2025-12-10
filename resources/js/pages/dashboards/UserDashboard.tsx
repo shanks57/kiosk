@@ -32,7 +32,7 @@ export default function UserDashboard(
                     {tickets.map((ticket, i) => (
                         <TicketCard
                             key={i}
-                            qrCode={ticket?.items?.[0].category?.name || ''}
+                            qrCode={ticket?.ticket_code || ''}
                             title={ticket?.items?.[0].category?.name || ''}
                             price={
                                 formatRupiah(ticket?.items?.[0].price || 0) ||

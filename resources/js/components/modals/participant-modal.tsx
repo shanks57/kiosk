@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { TicketCategoryType } from '@/types';
 import { DialogClose, DialogTrigger } from '@radix-ui/react-dialog';
 import axios from 'axios';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import {
     Select,
@@ -40,7 +40,10 @@ export function ParticipantModal({
         email: '',
         phone: '',
         ticket_category_id: '',
+        company_name: '',
+        company_logo: null as File | null,
     });
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -51,22 +54,46 @@ export function ParticipantModal({
         setFormData((prev) => ({ ...prev, ticket_category_id: value }));
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file =
+            e.target.files && e.target.files[0] ? e.target.files[0] : null;
+        setFormData((prev) => ({ ...prev, company_logo: file }));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
         setLoading(true);
 
         try {
+            // Build multipart form data when file is present
+            const payload = new FormData();
+            payload.append('name', formData.name);
+            payload.append('email', formData.email);
+            payload.append('phone', formData.phone || '');
+            payload.append('ticket_category_id', formData.ticket_category_id);
+            if (formData.company_name)
+                payload.append('company_name', formData.company_name);
+            if (formData.company_logo)
+                payload.append('company_logo', formData.company_logo);
+
             await axios.post(
                 `/dashboard/events/${eventId}/participants`,
-                formData,
+                payload,
+                {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                },
             );
+
             setFormData({
                 name: '',
                 email: '',
                 phone: '',
                 ticket_category_id: '',
+                company_name: '',
+                company_logo: null,
             });
+            if (fileInputRef.current) fileInputRef.current.value = '';
             toast('Participant added');
             setModalOpen(false);
             onSuccess?.();
@@ -109,6 +136,17 @@ export function ParticipantModal({
                             value={formData.name}
                             onChange={handleChange}
                             required
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="company_name">Company Name</Label>
+                        <Input
+                            id="company_name"
+                            name="company_name"
+                            placeholder="Enter company name (optional)"
+                            value={formData.company_name}
+                            onChange={handleChange}
                         />
                     </div>
 
@@ -159,6 +197,21 @@ export function ParticipantModal({
                                 ))}
                             </SelectContent>
                         </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="company_logo">
+                            Company Image (optional)
+                        </Label>
+                        <input
+                            ref={fileInputRef}
+                            id="company_logo"
+                            name="company_logo"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+                        />
                     </div>
 
                     <div className="flex justify-end gap-3 pt-4">

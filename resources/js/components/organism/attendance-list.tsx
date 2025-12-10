@@ -12,7 +12,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import {
+    Sheet,
+    SheetContent,
+    SheetTitle,
+    SheetTrigger,
+} from '@/components/ui/sheet';
 import {
     Table,
     TableBody,
@@ -48,6 +53,7 @@ import { useState } from 'react';
 import QRCode from 'react-qr-code';
 import { toast } from 'sonner';
 export const AttendanceList = (props: AttendancePageProps) => {
+    console.log(props);
     const { event, ticketCategories, participants } = props;
     const [sorting, setSorting] = useState<SortingState>([]);
     const [filter, setFilter] = useState('');
@@ -82,7 +88,11 @@ export const AttendanceList = (props: AttendancePageProps) => {
     };
 
     const columns: ColumnDef<ParticipantType>[] = [
-        { accessorKey: 'id', header: 'Event Code' },
+        {
+            accessorKey: 'booking_code',
+            header: 'Event Code',
+            cell: ({ row }) => row.id,
+        },
         {
             accessorKey: 'order.user.company',
             header: 'Company',
@@ -125,20 +135,19 @@ export const AttendanceList = (props: AttendancePageProps) => {
             },
         },
         {
-            accessorKey: '',
+            accessorKey: 'order.attendance_status',
             header: 'Status',
             cell: ({ row }) => {
-                const v: string | undefined =
-                    row.getValue('status') || undefined;
+                const value = row.original.order.attendance_status;
                 return (
                     <span
                         className={
-                            v === 'Check-In'
+                            value !== 'absent'
                                 ? 'rounded bg-blue-100 px-2 py-1 text-xs text-blue-600'
                                 : 'rounded bg-red-100 px-2 py-1 text-xs text-red-600'
                         }
                     >
-                        {v || 'Absence'}
+                        {value || 'Absence'}
                     </span>
                 );
             },
@@ -148,6 +157,7 @@ export const AttendanceList = (props: AttendancePageProps) => {
             header: 'Action',
             cell: ({ row }) => {
                 const v: string = row.getValue('status');
+                const data = row.original;
                 return (
                     <div className="flex items-center gap-2">
                         <Sheet>
@@ -165,29 +175,35 @@ export const AttendanceList = (props: AttendancePageProps) => {
                                 <div className="grid h-full grid-cols-2">
                                     {/* Left Section - Participant Information */}
                                     <div className="h-full border p-6">
-                                        <h2 className="mb-4 text-lg font-semibold">
+                                        <SheetTitle className="mb-4 text-lg font-semibold">
                                             Participant Information
-                                        </h2>
+                                        </SheetTitle>
+                                        {/* <h2 className="mb-4 text-lg font-semibold">
+                                            Participant Information
+                                        </h2> */}
                                         <div className="text-sm">
                                             <div className="space-y-4">
                                                 <div className="flex justify-between text-sm">
                                                     <Label>Company Name</Label>
                                                     <span className="font-medium">
-                                                        PT Bank Mandiri
+                                                        {
+                                                            data.order.user
+                                                                ?.company?.name
+                                                        }
                                                     </span>
                                                 </div>
                                                 <Separator />
                                                 <div className="flex justify-between text-sm">
                                                     <Label>PIC Name</Label>
                                                     <span className="font-medium">
-                                                        Sofia Chen
+                                                        {data.order.user?.name}
                                                     </span>
                                                 </div>
                                                 <Separator />
                                                 <div className="flex justify-between text-sm">
                                                     <Label>PIC Email</Label>
                                                     <span className="font-medium">
-                                                        sofia.chen@email.com
+                                                        {data.order.user?.email}
                                                     </span>
                                                 </div>
                                                 <Separator />
@@ -196,7 +212,7 @@ export const AttendanceList = (props: AttendancePageProps) => {
                                                         PIC Phone Number
                                                     </Label>
                                                     <span className="font-medium">
-                                                        +6287812345678
+                                                        {/* {data.order.user} */}
                                                     </span>
                                                 </div>
                                             </div>
@@ -216,7 +232,13 @@ export const AttendanceList = (props: AttendancePageProps) => {
 
                                                 {/* QR Placeholder */}
                                                 <div className="flex h-40 w-40 items-center justify-center rounded-md bg-gray-200">
-                                                    <QRCode value="1234567890" />
+                                                    <QRCode
+                                                        value={
+                                                            data.order
+                                                                ?.ticket_code ||
+                                                            ''
+                                                        }
+                                                    />
                                                 </div>
 
                                                 <div className="border-t-dashed-custom"></div>
@@ -225,7 +247,48 @@ export const AttendanceList = (props: AttendancePageProps) => {
                                                     <h4 className="mb-3 font-medium">
                                                         Seat Information
                                                     </h4>
-                                                    <div className="space-y-2">
+                                                    <div>
+                                                        <Label className="">
+                                                            Participant Name
+                                                        </Label>
+                                                        <Input />
+                                                    </div>
+                                                    <div>
+                                                        <Label className="">
+                                                            Phone Number
+                                                        </Label>
+                                                        <Input />
+                                                    </div>
+                                                    <div className="flex items-center justify-between">
+                                                        <Label className="">
+                                                            Seat Information
+                                                        </Label>
+                                                        <div className="flex items-center gap-2">
+                                                            <Input
+                                                                type="text"
+                                                                className="w-24 py-1"
+                                                                // value={
+                                                                //     seat.value
+                                                                // }
+                                                                // onChange={(e) =>
+                                                                //     updateSeat(
+                                                                //         seat.id,
+                                                                //         e.target
+                                                                //             .value,
+                                                                //     )
+                                                                // }
+                                                            />
+                                                            <Trash
+                                                                className="h-5 w-5 cursor-pointer text-foreground/50"
+                                                                // onClick={() =>
+                                                                //     removeSeat(
+                                                                //         seat.id,
+                                                                //     )
+                                                                // }
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    {/* <div className="space-y-2">
                                                         {seats.map(
                                                             (seat, index) => (
                                                                 <div
@@ -269,7 +332,7 @@ export const AttendanceList = (props: AttendancePageProps) => {
                                                                 </div>
                                                             ),
                                                         )}
-                                                    </div>
+                                                    </div> */}
 
                                                     <div className="flex justify-end">
                                                         <Button

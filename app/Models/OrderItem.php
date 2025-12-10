@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class OrderItem extends Model
 {
@@ -11,7 +12,26 @@ class OrderItem extends Model
         'event_seat_id',
         'ticket_category_id',
         'price',
+        'booking_code',
+        'status',
     ];
+
+    protected static function booted()
+    {
+        static::creating(function ($item) {
+            if (empty($item->booking_code)) {
+                $item->booking_code = Str::random(10);
+            }
+
+            if (! isset($item->status) || $item->status === null) {
+                if ($item->order && $item->order->status) {
+                    $item->status = $item->order->status;
+                } else {
+                    $item->status = null;
+                }
+            }
+        });
+    }
 
     public function order()
     {

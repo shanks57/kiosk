@@ -102,6 +102,8 @@ export interface OrderType {
     total_amount?: number | null;
     created_at?: string | null;
     updated_at?: string | null;
+    ticket_code? : string;
+    attendance_status?: string | null;
     items?: OrderItemType[];
     payment?: PaymentType | null;
     user?: UserType | null;
@@ -124,6 +126,15 @@ export interface EventType {
     sections?: EventSectionType[];
     ticketCategories?: TicketCategoryType[];
     // [key: string]: unknown;
+}
+
+export interface CompanyType {
+    id: number;
+    user_id?: number;
+    name?: string | null;
+    company_logo?: string;
+    user?: UserType | null;
+    events?: EventType[];
 }
 
 export interface Auth {
@@ -166,7 +177,9 @@ export interface UserType {
     updated_at?: string | null;
     roles?: (string | RoleType)[];
     organizer?: OrganizerType | null;
-    [key: string]: unknown; // This allows for additional properties...
+    company?: CompanyType | null;
+
+    // [key: string]: unknown; // This allows for additional properties...
 }
 
 export type ParticipantType = {
