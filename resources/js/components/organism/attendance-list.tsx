@@ -49,7 +49,7 @@ import {
     Ticket,
     Trash,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
 import { toast } from 'sonner';
 export const AttendanceList = (props: AttendancePageProps) => {
@@ -62,6 +62,8 @@ export const AttendanceList = (props: AttendancePageProps) => {
         { id: 1, value: '2C' },
         { id: 2, value: '2C' },
     ]);
+    const [printCode, setPrintCode] = useState<string | null>(null);
+    const qrWrapperRef = useRef<HTMLDivElement | null>(null);
 
     const addSeat = () => {
         const newId = seats.length ? seats[seats.length - 1].id + 1 : 1;
@@ -396,11 +398,93 @@ export const AttendanceList = (props: AttendancePageProps) => {
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
+                        <button
+                            className="text-sm text-primary"
+                            onClick={() => handleDownload(data)}
+                        >
+                            Download Ticket
+                        </button>
                     </div>
                 );
             },
         },
     ];
+
+    const handleDownload = (data: ParticipantType) => {
+        const code = data.order?.ticket_code || '';
+        // render QR into hidden container
+        setPrintCode(code);
+
+        // allow DOM to update and then grab svg
+        setTimeout(() => {
+            const wrapper = qrWrapperRef.current;
+            const svg = wrapper?.querySelector('svg');
+            const svgHtml = svg
+                ? new XMLSerializer().serializeToString(svg)
+                : '';
+
+            const userName = data.order?.user?.name || '';
+            const email = data.order?.user?.email || '';
+            const eventTitle = event.title || '';
+            const eventDate = event.start_time || event.start_time || '';
+
+            const html = `
+                                <html>
+                                <head>
+                                    <meta charset="utf-8" />
+                                    <title>Ticket ${code}</title>
+                                    <style>
+                                        body { font-family: Arial, Helvetica, sans-serif; padding: 20px; }
+                                        .ticket { border: 1px solid #ddd; padding: 20px; max-width: 600px; }
+                                        .header { display:flex; align-items:center; justify-content:space-between }
+                                        .qr { width:250px; height:250px }
+                                        .meta { margin-left: 20px }
+                                        .meta h2 { margin: 0 0 8px 0 }
+                                        .meta p { margin: 2px 0 }
+                                    </style>
+                                </head>
+                                <body>
+                                    <div class="ticket">
+                                        <div class="header">
+                                            <div class="meta">
+                                                <h2>${escapeHtml(eventTitle)}</h2>
+                                                <p><strong>Date:</strong> ${escapeHtml(eventDate)}</p>
+                                                <p><strong>Name:</strong> ${escapeHtml(userName)}</p>
+                                                <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+                                                <p><strong>Ticket Code:</strong> ${escapeHtml(code)}</p>
+                                            </div>
+                                            <div class="qr">${svgHtml}</div>
+                                        </div>
+                                    </div>
+                                </body>
+                                </html>
+                        `;
+
+            const w = window.open('', '_blank');
+            if (w) {
+                w.document.open();
+                w.document.write(html);
+                w.document.close();
+                // give time to render then call print
+                setTimeout(() => {
+                    w.print();
+                }, 500);
+            } else {
+                toast('Unable to open print window. Please allow popups.');
+            }
+            // clear printCode
+            setPrintCode(null);
+        }, 100);
+    };
+
+    const escapeHtml = (unsafe: string) => {
+        return unsafe
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    };
 
     const table = useReactTable({
         data: participants.data,
@@ -457,6 +541,18 @@ export const AttendanceList = (props: AttendancePageProps) => {
                     />
                 </div>
                 <div className="min-h-[60vh] rounded-md border bg-white">
+                    {/* Hidden QR renderer used for ticket print/export */}
+                    <div
+                        ref={qrWrapperRef as any}
+                        style={{
+                            position: 'absolute',
+                            left: -9999,
+                            top: -9999,
+                            visibility: 'hidden',
+                        }}
+                    >
+                        {printCode ? <QRCode value={printCode} /> : null}
+                    </div>
                     <Table>
                         <TableHeader>
                             {table.getHeaderGroups().map((hg) => (
