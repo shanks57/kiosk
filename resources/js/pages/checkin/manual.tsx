@@ -70,15 +70,15 @@ export default function ManualPage() {
         <div className="bg-foreground/10">
             <div className="relative mx-auto flex h-screen w-full max-w-md items-center justify-center bg-white">
                 <div className="flex flex-col gap-4">
-                    <h4 className="text-center text-2xl font-medium">
+                    <h4 className="text-center text-2xl font-mediu text-black">
                         Input Invitation Code
                     </h4>
-                    <Input name="code_invitation" type="text" value={code} />
+                    <Input name="code_invitation" type="text" value={code} onChange={e => setCode(e.target.value)} className='text-black' />
                     <Button
                         type="submit"
                         variant="default"
                         size="lg"
-                        className="rounded-sm"
+                        className="rounded-sm bg-primary dark:bg-primary-foreground text-white"
                     >
                         Konfirmasi
                     </Button>
@@ -86,7 +86,7 @@ export default function ManualPage() {
 
                 <div className="absolute bottom-0 grid h-[20vh] w-full grid-cols-2 bg-white px-6 py-4">
                     <div className="m-auto flex h-full flex-col justify-between gap-3">
-                        <p className="text-xs">
+                        <p className="text-xs text-black">
                             Masukkan kode secara manual jika{' '}
                             <strong>QR Code tidak terbaca.</strong>
                         </p>
@@ -108,8 +108,8 @@ export default function ManualPage() {
                     </div>
                     <div className="px-6">
                         <Link href="/checkin/scan">
-                            <Button className="flex h-full w-full flex-col items-center justify-center rounded-none bg-primary">
-                                <p className="text-lg font-medium text-white dark:text-secondary">
+                            <Button className="flex h-full w-full flex-col items-center justify-center rounded-none bg-primary dark:bg-primary-foreground">
+                                <p className="text-lg font-medium text-white dark:text-foreground">
                                     Scan QR
                                 </p>
                                 <img
@@ -124,7 +124,7 @@ export default function ManualPage() {
                 </div>
             </div>
 
-            <div className="absolute bottom-[10vh] left-1/2 flex w-3/4 -translate-x-1/2 transform px-4">
+            <div className="absolute hidden bottom-[10vh] left-1/2 md:flex w-3/4 -translate-x-1/2 transform px-4">
                 <Keyboard
                     keyboardRef={(r) => (keyboard.current = r)}
                     layoutName={layoutName}

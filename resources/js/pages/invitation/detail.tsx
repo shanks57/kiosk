@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 const participants = ['John Doe', 'John Doe 2', 'John Doe 3'];
 export default function InvitationDetail() {
     return (
-        <div className="flex min-h-screen w-full flex-col bg-foreground/5">
+        <div className="flex min-h-screen w-full flex-col bg-foreground/5 dark:bg-primary">
             <Toaster />
             <div className="flex items-center justify-between bg-white p-4">
                 <h4 className="text-xs font-medium dark:text-secondary">

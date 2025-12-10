@@ -2,7 +2,7 @@ export default function PublicFooter() {
     return (
         <footer className="mt-10 border-t py-10 text-center text-sm text-gray-500">
             <div className="mx-auto max-w-7xl px-6">
-                <div className="mb-3 flex items-center justify-center gap-2 text-sm">
+                <div className="mb-3 flex items-center flex-wrap justify-center gap-2 text-sm">
                     <a className="text-primary hover:underline" href="/events">
                         Browse Events
                     </a>

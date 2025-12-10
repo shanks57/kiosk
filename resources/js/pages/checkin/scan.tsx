@@ -153,7 +153,7 @@ export default function ScanPage() {
 
                 <div className="absolute bottom-0 grid h-[20vh] w-full grid-cols-2 bg-white px-6 py-4">
                     <div className="m-auto flex h-full flex-col justify-between gap-3">
-                        <p className="text-xs">
+                        <p className="text-black text-xs">
                             Masukkan kode secara manual jika{' '}
                             <strong>QR Code tidak terbaca.</strong>
                         </p>
@@ -176,9 +176,9 @@ export default function ScanPage() {
                     <div className="px-6">
                         <Button
                             onClick={() => setShowScan(!showScan)}
-                            className="flex h-full w-full flex-col items-center justify-center rounded-none bg-primary"
+                            className="flex h-full w-full flex-col items-center justify-center rounded-none bg-primary dark:bg-primary-foreground"
                         >
-                            <p className="text-lg font-medium text-white dark:text-secondary">
+                            <p className="text-lg font-medium text-white dark:text-foreground">
                                 Scan QR
                             </p>
                             <img
