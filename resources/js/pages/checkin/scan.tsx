@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 export default function ScanPage() {
     const [code, setCode] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showModal, setShowModal] = useState(false);
     const [showScan, setShowScan] = useState(false);
     const [order, setOrder] = useState<OrderType | null>(null);
 
@@ -25,10 +26,14 @@ export default function ScanPage() {
         setLoading(true);
         try {
             const res = await axios.post('/checkin', { code: ticketCode });
-            toast.success(JSON.stringify(res.data));
             setOrder(res.data.item);
             setCode('');
-            router.visit('/invitation');
+
+            toast.success(JSON.stringify(res.data));
+            setShowModal(false);
+            setTimeout(() => {
+                router.visit(`/invitation/${code}`);
+            }, 500);
         } catch (err: any) {
             toast.error(err.response?.data?.message || 'Check-in failed');
         } finally {
@@ -41,12 +46,15 @@ export default function ScanPage() {
             <div className="relative mx-auto h-screen w-full max-w-md bg-black">
                 {showScan && (
                     <Scanner
-                        onScan={(result) => handleSubmit(result[0].rawValue)}
+                        onScan={(result) => {
+                            setShowModal(true);
+                            setCode(result[0].rawValue);
+                        }}
                         onError={(error) => toast(error?.toString())}
                     />
                 )}
                 <div className="absolute bottom-1/5 left-1/2 flex w-full -translate-x-1/2 -translate-y-[80%] px-4">
-                    <Dialog>
+                    <Dialog onOpenChange={setShowModal} open={showModal}>
                         <DialogTrigger asChild>
                             <Button
                                 size="lg"
@@ -86,7 +94,7 @@ export default function ScanPage() {
                                     <div className="flex gap-4">
                                         <QRCode
                                             size={100}
-                                            value="https://google.com"
+                                            value={order?.ticket_code || ''}
                                         />
 
                                         <div className="space-y-1 text-sm">
@@ -145,11 +153,13 @@ export default function ScanPage() {
                                         Cancel
                                     </Button>
                                 </DialogClose>
-                                <Link href="/invitation">
-                                    <Button className="h-full w-full rounded-none border-none px-6 py-4">
-                                        Confirm
-                                    </Button>
-                                </Link>
+
+                                <Button
+                                    onClick={() => handleSubmit(code)}
+                                    className="h-full w-full rounded-none border-none px-6 py-4"
+                                >
+                                    Confirm
+                                </Button>
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>

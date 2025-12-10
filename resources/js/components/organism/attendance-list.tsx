@@ -231,14 +231,22 @@ export const AttendanceList = (props: AttendancePageProps) => {
                                                 </h3>
 
                                                 {/* QR Placeholder */}
-                                                <div className="flex h-40 w-40 items-center justify-center rounded-md bg-gray-200">
-                                                    <QRCode
-                                                        value={
-                                                            data.order
-                                                                ?.ticket_code ||
-                                                            ''
+                                                <div className="flex gap-4">
+                                                    <div className="flex h-40 w-40 items-center justify-center rounded-md bg-gray-200">
+                                                        <QRCode
+                                                            value={
+                                                                data.order
+                                                                    ?.ticket_code ||
+                                                                ''
+                                                            }
+                                                        />
+                                                    </div>
+                                                    <span className="text-base font-medium">
+                                                        {
+                                                            data?.order
+                                                                ?.ticket_code
                                                         }
-                                                    />
+                                                    </span>
                                                 </div>
 
                                                 <div className="border-t-dashed-custom"></div>
