@@ -70,6 +70,6 @@ class CheckinController extends Controller
         // $item->attendance_status = 'checked-in';
         // $item->save();
 
-        return redirect()->back()->with(['message' => 'Check-in successful']);
+        return redirect()->back()->with(['message' => 'Check-in successful', 'item' => $item]);
     }
 }

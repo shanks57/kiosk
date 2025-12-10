@@ -6,6 +6,7 @@ import {
     DialogFooter,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import { OrderType } from '@/types';
 import { Link, router } from '@inertiajs/react';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import axios from 'axios';
@@ -18,12 +19,14 @@ export default function ScanPage() {
     const [code, setCode] = useState('');
     const [loading, setLoading] = useState(false);
     const [showScan, setShowScan] = useState(false);
+    const [order, setOrder] = useState<OrderType | null>(null);
 
     const handleSubmit = async (ticketCode: string) => {
         setLoading(true);
         try {
             const res = await axios.post('/checkin', { code: ticketCode });
-            toast.success(res.data.message || 'Checked in successfully');
+            toast.success(JSON.stringify(res.data));
+            setOrder(res.data.item);
             setCode('');
             router.visit('/invitation');
         } catch (err: any) {
@@ -92,7 +95,8 @@ export default function ScanPage() {
                                                     Company Name
                                                 </p>
                                                 <p className="font-medium">
-                                                    PT Bank Mandiri
+                                                    {order?.user?.company
+                                                        ?.name || '-'}
                                                 </p>
                                             </div>
                                             <div>
@@ -100,7 +104,7 @@ export default function ScanPage() {
                                                     PIC Name
                                                 </p>
                                                 <p className="font-medium">
-                                                    Sofia Chen
+                                                    {order?.user?.name || '-'}
                                                 </p>
                                             </div>
                                             <div>
@@ -108,7 +112,7 @@ export default function ScanPage() {
                                                     PIC Email
                                                 </p>
                                                 <p className="font-medium break-all">
-                                                    Sofia.chen@email.com
+                                                    {order?.user?.email || '-'}
                                                 </p>
                                             </div>
                                             <div>
@@ -116,7 +120,7 @@ export default function ScanPage() {
                                                     PIC Phone Number
                                                 </p>
                                                 <p className="font-medium">
-                                                    +6287812345678
+                                                    {'-'}
                                                 </p>
                                             </div>
                                             <div>
