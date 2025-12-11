@@ -40,7 +40,7 @@ class CheckinController extends Controller
 
         $code = $request->input('code');
 
-        $item = Order::where('ticket_code', $code)->first();
+        $item = Order::with(['user.company', 'event'])->where('ticket_code', $code)->first();
         if (! $item) {
             return redirect()->back()->with(['message' => 'Invalid code or not found']);
         }
