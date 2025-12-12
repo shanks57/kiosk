@@ -19,7 +19,6 @@ export default function ScanPage() {
     const [code, setCode] = useState('');
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    const [showScan, setShowScan] = useState(false);
     const [order, setOrder] = useState<OrderType | null>(null);
 
     const handleSubmit = async (ticketCode: string) => {
@@ -44,15 +43,13 @@ export default function ScanPage() {
     return (
         <div className="bg-foreground">
             <div className="relative mx-auto h-screen w-full max-w-md bg-black">
-                {showScan && (
-                    <Scanner
-                        onScan={(result) => {
-                            setShowModal(true);
-                            setCode(result[0].rawValue);
-                        }}
-                        onError={(error) => toast(error?.toString())}
-                    />
-                )}
+                <Scanner
+                    onScan={(result) => {
+                        setShowModal(true);
+                        setCode(result[0].rawValue);
+                    }}
+                    onError={(error) => toast(error?.toString())}
+                />
                 <div className="absolute bottom-1/5 left-1/2 flex w-full -translate-x-1/2 -translate-y-[80%] px-4">
                     <Dialog onOpenChange={setShowModal} open={showModal}>
                         <DialogTrigger asChild>
@@ -188,10 +185,7 @@ export default function ScanPage() {
                         </div>
                     </div>
                     <div className="px-6">
-                        <Button
-                            onClick={() => setShowScan(!showScan)}
-                            className="flex h-full w-full flex-col items-center justify-center rounded-none bg-primary dark:bg-primary-foreground"
-                        >
+                        <Button className="flex h-full w-full flex-col items-center justify-center rounded-none bg-primary dark:bg-primary-foreground">
                             <p className="text-lg font-medium text-white dark:text-foreground">
                                 Scan QR
                             </p>
