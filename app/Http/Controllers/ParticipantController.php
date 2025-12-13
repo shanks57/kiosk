@@ -14,8 +14,10 @@ use Inertia\Inertia;
 use App\Models\Company;
 use App\Models\TicketCategory;
 use App\Models\Participant;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use PragmaRX\Google2FA\Support\QRCode;
 
 use function Symfony\Component\String\b;
 

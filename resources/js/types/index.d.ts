@@ -74,6 +74,7 @@ export interface OrderItemType {
     event_seat_id?: number;
     ticket_category_id?: number;
     booking_code?: string | null;
+    event_date?: string | null;
     price?: number | null;
     created_at?: string | null;
     updated_at?: string | null;

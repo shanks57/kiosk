@@ -4,10 +4,10 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/components/ui/sheet';
-import { EventType, OrderType } from '@/types';
+import { generateTicketHtml } from '@/lib/utils';
+import { EventType, OrderItemType, OrderType } from '@/types';
 import axios from 'axios';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import dayjs from 'dayjs';
 import { ArrowLeft, Download, Eye, Ticket } from 'lucide-react';
 import { useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
@@ -102,212 +102,46 @@ export default function ParticipantDetailModal(
     };
 
     // Handle ticket PDF download
-    const handleDownloadTicket = async (
-        orderItemIndex: number,
-        orderItem: any,
-    ) => {
-        try {
-            setDownloadingIndex(orderItemIndex);
+    const handleDownloadTicket = async (item: OrderItemType) => {
+        const code = item.booking_code || '';
+        setPrintCode(code);
 
-            // Create a temporary container with simple, compatible CSS
-            const container = document.createElement('div');
-            container.style.position = 'absolute';
-            container.style.left = '-9999px';
-            container.style.top = '0';
-            container.style.width = '210mm';
-            container.style.minHeight = '297mm';
-            container.style.padding = '20px';
-            container.style.backgroundColor = '#ffffff';
-            container.style.fontFamily = 'Arial, sans-serif';
-            container.style.color = '#000000';
+        requestAnimationFrame(() => {
+            const wrapper = qrWrapperRef.current;
+            if (!wrapper) return;
 
-            // Create ticket HTML with inline styles only (no Tailwind)
-            const ticketHTML = document.createElement('div');
-            ticketHTML.style.textAlign = 'center';
-            ticketHTML.style.padding = '20px';
-
-            // Title
-            const title = document.createElement('h1');
-            title.textContent = event.title || 'Event Ticket';
-            title.style.margin = '20px 0';
-            title.style.color = '#333333';
-            title.style.fontSize = '24px';
-            title.style.fontWeight = 'bold';
-            ticketHTML.appendChild(title);
-
-            // Subtitle
-            const subtitle = document.createElement('h2');
-            subtitle.textContent = 'Ticket';
-            subtitle.style.margin = '10px 0';
-            subtitle.style.color = '#666666';
-            subtitle.style.fontSize = '18px';
-            ticketHTML.appendChild(subtitle);
-
-            // QR Code wrapper
-            const qrSection = document.createElement('div');
-            qrSection.style.margin = '30px 0';
-            qrSection.style.display = 'flex';
-            qrSection.style.justifyContent = 'center';
-            qrSection.style.padding = '10px';
-            qrSection.style.backgroundColor = '#ffffff';
-            qrSection.id = 'qr-wrapper';
-
-            // Create a canvas-based QR code to avoid SVG color issues
-            const qrCanvas = document.createElement('canvas');
-            qrCanvas.width = 200;
-            qrCanvas.height = 200;
-            qrCanvas.style.border = '1px solid #ccc';
-
-            // Use a simple approach: convert booking code to QR using canvas
-            // Import QRCode library already available via react-qr-code
-            try {
-                // Get the existing QR code image from the page and render it to canvas
-                const existingQR = document.querySelector(
-                    'svg[data-testid="qrcode"]',
-                );
-                if (existingQR) {
-                    // Convert SVG to image data URL using canvas
-                    const svgString = new XMLSerializer().serializeToString(
-                        existingQR,
-                    );
-                    // Replace oklch colors with simple hex colors
-                    const cleanedSvg = svgString
-                        .replace(/oklch\([^)]+\)/g, '#000000')
-                        .replace(/color:\s*currentColor/g, 'color: #000000');
-
-                    const svg = new Blob([cleanedSvg], {
-                        type: 'image/svg+xml',
-                    });
-                    const url = URL.createObjectURL(svg);
-                    const img = document.createElement('img');
-                    img.src = url;
-                    img.style.width = '200px';
-                    img.style.height = '200px';
-                    img.onload = () => {
-                        URL.revokeObjectURL(url);
-                    };
-                    qrSection.appendChild(img);
-                } else {
-                    // Fallback: display a text placeholder
-                    const placeholder = document.createElement('div');
-                    placeholder.textContent = 'QR Code';
-                    placeholder.style.width = '200px';
-                    placeholder.style.height = '200px';
-                    placeholder.style.display = 'flex';
-                    placeholder.style.alignItems = 'center';
-                    placeholder.style.justifyContent = 'center';
-                    placeholder.style.backgroundColor = '#f0f0f0';
-                    placeholder.style.border = '1px solid #ccc';
-                    placeholder.style.color = '#999';
-                    qrSection.appendChild(placeholder);
-                }
-            } catch (e) {
-                console.warn('QR code render error:', e);
-                const placeholder = document.createElement('div');
-                placeholder.textContent = 'QR Code';
-                placeholder.style.width = '200px';
-                placeholder.style.height = '200px';
-                placeholder.style.display = 'flex';
-                placeholder.style.alignItems = 'center';
-                placeholder.style.justifyContent = 'center';
-                placeholder.style.backgroundColor = '#f0f0f0';
-                placeholder.style.border = '1px solid #ccc';
-                qrSection.appendChild(placeholder);
+            const svg = wrapper.querySelector('svg');
+            if (!svg) {
+                toast('QR belum siap, coba lagi');
+                return;
             }
 
-            ticketHTML.appendChild(qrSection);
+            const svgHtml = new XMLSerializer().serializeToString(svg);
 
-            // Booking code section
-            const codeSection = document.createElement('div');
-            codeSection.style.margin = '30px 0';
-            codeSection.style.borderTop = '1px solid #cccccc';
-            codeSection.style.paddingTop = '20px';
-
-            const codeLabel = document.createElement('p');
-            codeLabel.textContent = 'Booking Code:';
-            codeLabel.style.margin = '10px 0';
-            codeLabel.style.fontSize = '16px';
-            codeLabel.style.fontWeight = 'bold';
-            codeSection.appendChild(codeLabel);
-
-            const codeValue = document.createElement('p');
-            codeValue.textContent =
-                orderItem.booking_code?.toUpperCase() || 'N/A';
-            codeValue.style.margin = '10px 0';
-            codeValue.style.fontSize = '28px';
-            codeValue.style.fontWeight = 'bold';
-            codeValue.style.letterSpacing = '2px';
-            codeValue.style.color = '#0066cc';
-            codeSection.appendChild(codeValue);
-
-            ticketHTML.appendChild(codeSection);
-
-            // Details section
-            const detailsSection = document.createElement('div');
-            detailsSection.style.margin = '30px 0';
-            detailsSection.style.textAlign = 'left';
-            detailsSection.style.padding = '20px';
-            detailsSection.style.backgroundColor = '#f5f5f5';
-            detailsSection.style.borderRadius = '5px';
-
-            const eventDetail = document.createElement('p');
-            eventDetail.innerHTML = `<strong>Event:</strong> ${event.title || 'N/A'}`;
-            eventDetail.style.margin = '10px 0';
-            detailsSection.appendChild(eventDetail);
-
-            const dateDetail = document.createElement('p');
-            dateDetail.innerHTML = `<strong>Booking Date:</strong> ${new Date().toLocaleDateString()}`;
-            dateDetail.style.margin = '10px 0';
-            detailsSection.appendChild(dateDetail);
-
-            const noteDetail = document.createElement('p');
-            noteDetail.textContent =
-                'Please scan this QR code at the venue entrance.';
-            noteDetail.style.margin = '10px 0';
-            noteDetail.style.color = '#666666';
-            noteDetail.style.fontSize = '12px';
-            detailsSection.appendChild(noteDetail);
-
-            ticketHTML.appendChild(detailsSection);
-            container.appendChild(ticketHTML);
-            document.body.appendChild(container);
-
-            // Convert to canvas and then to PDF
-            const canvas = await html2canvas(container, {
-                scale: 2,
-                backgroundColor: '#ffffff',
-                logging: false,
-                useCORS: true,
-                allowTaint: true,
+            const html = generateTicketHtml({
+                code,
+                eventTitle: event.title || '',
+                eventDate: dayjs(item.event_date).format('dddd, DD MMMM YYYY'),
+                svgHtml,
+                participants: item.participant || [],
             });
 
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4',
-            });
+            const w = window.open('', '_blank');
+            if (!w) {
+                toast('Popup diblokir browser');
+                return;
+            }
 
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const imgWidth = pdfWidth - 20; // 10mm margin on each side
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            w.document.open();
+            w.document.write(html);
+            w.document.close();
 
-            pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+            w.onload = () => {
+                w.print();
+            };
 
-            // Download the PDF
-            pdf.save(
-                `ticket-${orderItem.booking_code?.toLowerCase() || 'download'}.pdf`,
-            );
-
-            // Clean up
-            document.body.removeChild(container);
-            toast.success('Ticket downloaded successfully');
-        } catch (error: any) {
-            console.error('Download error:', error);
-            toast.error('Failed to download ticket');
-        } finally {
-            setDownloadingIndex(null);
-        }
+            setPrintCode(null);
+        });
     };
 
     // Handle new participants submission
@@ -380,6 +214,17 @@ export default function ParticipantDetailModal(
                             <ArrowLeft className="mr-2 h-4 w-4" />
                         </Button>
                     </div>
+                    <div
+                        ref={qrWrapperRef as any}
+                        style={{
+                            position: 'absolute',
+                            left: -9999,
+                            top: -9999,
+                            visibility: 'hidden',
+                        }}
+                    >
+                        {printCode ? <QRCode value={printCode} /> : null}
+                    </div>
                     <div className="grid h-full lg:grid-cols-2">
                         {/* Left Section - Participant Information */}
                         <div className="h-full border p-6">
@@ -415,10 +260,7 @@ export default function ParticipantDetailModal(
                                             size="sm"
                                             variant="outline"
                                             onClick={() =>
-                                                handleDownloadTicket(
-                                                    index,
-                                                    orderItem,
-                                                )
+                                                handleDownloadTicket(orderItem)
                                             }
                                             disabled={
                                                 downloadingIndex === index
