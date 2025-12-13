@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Toaster } from '@/components/ui/sonner';
+import { OrderItemType } from '@/types';
 import { Link } from '@inertiajs/react';
 
 const items = [
@@ -40,7 +41,11 @@ const items = [
     },
 ];
 
-export default function Invitation() {
+export default function Invitation(props: {
+    item: OrderItemType;
+    code: string;
+}) {
+    const { code, item } = props;
     return (
         <div className="flex min-h-screen w-full flex-col bg-black">
             <Toaster />
@@ -69,8 +74,10 @@ export default function Invitation() {
             </div>
             <div className="fixed inset-x-0 right-0 bottom-0 left-0 bg-white p-4">
                 <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-bold dark:text-secondary">Make a reservation</h4>
-                    <Link href="/invitation/detail">
+                    <h4 className="text-sm font-bold dark:text-secondary">
+                        Make a reservation
+                    </h4>
+                    <Link href={`/invitation/${code}/detail`}>
                         <Button>Reserve Now</Button>
                     </Link>
                 </div>

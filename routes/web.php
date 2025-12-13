@@ -35,8 +35,9 @@ Route::get('/checkin/manual', [CheckinController::class, 'manual'])->name('check
 Route::post('/checkin', [CheckinController::class, 'check'])->name('checkin.check');
 Route::get('/checkin/{code}/participant', [CheckinController::class, 'participant'])->name('checkin.participant');
 
-Route::get('/invitation', [InvitationController::class, 'index'])->name('invitation.index');
-Route::get('/invitation/{invitation}', [InvitationController::class, 'show'])->name('invitation.show');
+Route::get('/invitation/{invitation}', [InvitationController::class, 'index'])->name('invitation.index');
+Route::get('/invitation/{invitation}/detail', [InvitationController::class, 'show'])->name('invitation.show');
+Route::post('/invitation/{invitation}/attendance', [InvitationController::class, 'attendance'])->name('invitation.attendance');
 
 Route::get('/lottery', [LotteryController::class, 'index'])->name('lottery.index');
 

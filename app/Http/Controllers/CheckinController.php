@@ -66,7 +66,7 @@ class CheckinController extends Controller
         $order->attendance_status = 'checked-in';
         $order->save();
 
-        $item->attendance_status = 'checked-in';
+        $item->status = 'checked-in';
         $item->save();
 
         return redirect()->back()->with(['message' => 'Check-in successful', 'item' => $item]);

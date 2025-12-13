@@ -26,11 +26,11 @@ export default function ScanPage() {
     const handleSubmit = async (ticketCode: string) => {
         setLoading(true);
         try {
-            const res = await axios.post('/checkin', { code: ticketCode });
-            setOrder(res.data.item);
-            setCode('');
+            // const res = await axios.post('/checkin', { code: ticketCode });
+            // setOrder(res.data.item);
+            // setCode('');
 
-            toast.success(JSON.stringify(res.data));
+            // toast.success(JSON.stringify(res.data));
             setShowModal(false);
             setTimeout(() => {
                 router.visit(`/invitation/${code}`);

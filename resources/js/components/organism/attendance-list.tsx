@@ -9,6 +9,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 import { AttendancePageProps } from '@/pages/organizer/events/show';
 import { OrderType } from '@/types';
 import { Link, router } from '@inertiajs/react';
@@ -107,7 +108,12 @@ export const AttendanceList = (props: AttendancePageProps) => {
                 const v: string | undefined =
                     row.getValue('attendance_status') || undefined;
                 return (
-                    <span className="rounded-sm bg-red-200 px-2 py-1 text-sm">
+                    <span
+                        className={cn('rounded-sm text-sm py-1 px-2', {
+                            'bg-primary/80 text-white': v === 'checked-in',
+                            'bg-red-500 text-white': v !== 'checked-in',
+                        })}
+                    >
                         {v}
                     </span>
                 );

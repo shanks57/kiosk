@@ -294,7 +294,7 @@ export default function ParticipantDetailModal(
                                                     Ticket Code
                                                 </span>
                                                 <span className="text-xl font-medium">
-                                                    {orderItem?.booking_code?.toUpperCase()}
+                                                    {orderItem?.booking_code}
                                                 </span>
                                             </div>
                                         </div>

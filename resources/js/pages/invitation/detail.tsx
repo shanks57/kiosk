@@ -1,12 +1,61 @@
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Toaster } from '@/components/ui/sonner';
+import { OrderItemType } from '@/types';
 import { Link } from '@inertiajs/react';
+import axios from 'axios';
 import { ArrowLeft } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
-const participants = ['John Doe', 'John Doe 2', 'John Doe 3'];
-export default function InvitationDetail() {
+export default function InvitationDetail(props: {
+    item: OrderItemType;
+    code: string;
+}) {
+    const { item, code } = props;
+    const { order } = item;
+    const [selectedParticipants, setSelectedParticipants] = useState<number[]>(
+        [],
+    );
+    const [loading, setLoading] = useState(false);
+
+    const toggleParticipant = (id: number) => {
+        setSelectedParticipants((prev) =>
+            prev.includes(id)
+                ? prev.filter((pid) => pid !== id)
+                : [...prev, id],
+        );
+    };
+
+    const handleSubmitAttendance = async (status: 'attend' | 'not_attend') => {
+        if (selectedParticipants.length === 0) {
+            toast.error('Please select at least one participant');
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            await axios.post(`/invitation/${code}/attendance`, {
+                status,
+                participant_ids: selectedParticipants,
+                order_item_id: item.id,
+            });
+
+            toast.success(
+                status === 'attend'
+                    ? 'Participants marked as attending'
+                    : 'Participants marked as not attending',
+            );
+        } catch (error: any) {
+            toast.error(
+                error.response?.data?.message || 'Failed to submit attendance',
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="flex min-h-screen w-full flex-col bg-foreground/5 dark:bg-primary">
             <Toaster />
@@ -39,14 +88,18 @@ export default function InvitationDetail() {
                                 <p className="text-sm text-gray-500">
                                     Company Name
                                 </p>
-                                <p className="font-medium">PT Bank Mandiri</p>
+                                <p className="font-medium">
+                                    {item.company?.name}
+                                </p>
                             </div>
 
                             <div>
                                 <p className="text-sm text-gray-500">
                                     PIC Name
                                 </p>
-                                <p className="font-medium">Sofia Chen</p>
+                                <p className="font-medium">
+                                    {order?.user?.name}
+                                </p>
                             </div>
 
                             <div>
@@ -54,7 +107,7 @@ export default function InvitationDetail() {
                                     PIC Email
                                 </p>
                                 <p className="font-medium">
-                                    Sofia.chen@email.com
+                                    {order?.user?.email}
                                 </p>
                             </div>
 
@@ -62,14 +115,18 @@ export default function InvitationDetail() {
                                 <p className="text-sm text-gray-500">
                                     PIC Phone Number
                                 </p>
-                                <p className="font-medium">+6287812345678</p>
+                                <p className="font-medium">
+                                    {order?.user?.phone}
+                                </p>
                             </div>
 
                             <div>
                                 <p className="text-sm text-gray-500">
                                     Participant
                                 </p>
-                                <p className="font-medium">3 Participants</p>
+                                <p className="font-medium">
+                                    {item.participant?.length}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -84,25 +141,45 @@ export default function InvitationDetail() {
                         </div>
 
                         <div className="space-y-4">
-                            {participants.map((p, i) => (
+                            {item.participant?.map((p) => (
                                 <label
-                                    key={i}
-                                    className="flex items-center space-x-3"
+                                    key={p.id}
+                                    htmlFor={`participant-${p.id}`}
+                                    className="flex cursor-pointer items-center space-x-3"
                                 >
-                                    <Checkbox />
-                                    <span>{p}</span>
+                                    <Checkbox
+                                        id={`participant-${p.id}`}
+                                        checked={selectedParticipants.includes(
+                                            p.id,
+                                        )}
+                                        onCheckedChange={() =>
+                                            toggleParticipant(p.id)
+                                        }
+                                    />
+                                    <span>{p.user?.name}</span>
                                 </label>
                             ))}
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="fixed inset-x-0 right-0 bottom-0 left-0 border-t bg-white p-4">
+            <div className="fixed inset-x-0 bottom-0 border-t bg-white p-4">
                 <div className="flex items-center justify-between">
-                    <Button onClick={() => toast('Not Attend')} variant="ghost" className='dark:text-secondary dark:hover:bg-primary'>
+                    <Button
+                        disabled={loading}
+                        onClick={() => handleSubmitAttendance('not_attend')}
+                        variant="ghost"
+                        className="dark:text-secondary dark:hover:bg-primary"
+                    >
                         Not Attend
                     </Button>
-                    <Button onClick={() => toast('Attend')}>Attend</Button>
+
+                    <Button
+                        disabled={loading}
+                        onClick={() => handleSubmitAttendance('attend')}
+                    >
+                        Attend
+                    </Button>
                 </div>
             </div>
         </div>
