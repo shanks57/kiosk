@@ -61,11 +61,6 @@ export default function ManualPage() {
         }
     };
 
-    const handleShift = () => {
-        const newLayoutName = layoutName === 'default' ? 'shift' : 'default';
-        setLayoutName(newLayoutName);
-    };
-
     const onKeyPress = (button: string) => {
         console.log('Button pressed', button);
 
@@ -73,6 +68,10 @@ export default function ManualPage() {
          * If you want to handle the shift and caps lock buttons
          */
         if (button === '{shift}' || button === '{lock}') handleShift();
+    };
+
+    const handleShift = () => {
+        setLayoutName((prev) => (prev === 'default' ? 'shift' : 'default'));
     };
 
     // const onChangeInput = (event) => {
@@ -91,7 +90,7 @@ export default function ManualPage() {
     // };
 
     return (
-        <div className="bg-foreground/10">
+        <div className="bg-foreground/10 w-full">
             <div className="relative mx-auto flex h-screen w-full items-center justify-center bg-white">
                 <div className="flex flex-col gap-4">
                     <h4 className="font-mediu text-center text-2xl text-black">
@@ -102,9 +101,10 @@ export default function ManualPage() {
                         type="text"
                         value={code}
                         onChange={(e) => setCode(e.target.value)}
-                        className="text-black"
+                        className="text-black w-full"
                     />
                     <Button
+                        disabled={loading}
                         onClick={() => handleGetDataParticipant(code)}
                         variant="default"
                         size="lg"
@@ -264,14 +264,12 @@ export default function ManualPage() {
                 </div>
             </div>
 
-            <div className="absolute bottom-[10vh] left-1/2 hidden w-3/4 -translate-x-1/2 transform px-4 md:flex">
+            <div className="absolute bottom-[10vh] left-1/2 hidden w-3/4 -translate-x-1/2 -translate-y-3/4 transform px-4 md:flex">
                 <Keyboard
                     keyboardRef={(r) => (keyboard.current = r)}
                     layoutName={layoutName}
                     onChangeAll={(inp) => setCode(inp['default'])}
-                    onKeyPress={(button) =>
-                        console.log('Button pressed', button)
-                    }
+                    onKeyPress={(button) => onKeyPress(button)}
                 />
             </div>
         </div>
