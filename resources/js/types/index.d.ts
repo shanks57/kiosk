@@ -78,9 +78,11 @@ export interface OrderItemType {
     price?: number | null;
     created_at?: string | null;
     updated_at?: string | null;
+    order? : OrderType | null;
     seat?: EventSeatType | null;
     category?: TicketCategoryType | null;
     participant?: ParticipantType[];
+    company?: CompanyType | null;
     // [key: string]: unknown;
 }
 

@@ -25,6 +25,16 @@ class CheckinController extends Controller
         return Inertia::render('checkin/manual');
     }
 
+    public function participant($code)
+    {
+
+        $item = OrderItem::where('booking_code', $code)
+            ->with(['order.event', 'order.user', 'seat', 'category', 'company', 'participant'])
+            ->first();
+
+        return response()->json(['item' => $item]);
+    }
+
     /**
      * Process check-in by code (POST)
      * Accepts 'code' parameter. This controller will attempt to
@@ -40,35 +50,24 @@ class CheckinController extends Controller
 
         $code = $request->input('code');
 
-        $item = Order::with(['user.company', 'event'])->where('ticket_code', $code)->first();
+        $item = OrderItem::where('booking_code', $code)
+            ->with('order')
+            ->first();
         if (! $item) {
             return redirect()->back()->with(['message' => 'Invalid code or not found']);
         }
 
+        $order = Order::find($item->order_id);
+        if (! $order) {
+            return redirect()->back()->with(['message' => 'Order not found']);
+        }
+
+        $order->last_checkin_time = now();
+        $order->attendance_status = 'checked-in';
+        $order->save();
+
         $item->attendance_status = 'checked-in';
         $item->save();
-
-        // // Basic handling: if numeric, treat as order_item id
-        // if (is_numeric($code)) {
-        //     $item = OrderItem::find(intval($code));
-        //     if (! $item) {
-        //         return response()->json(['message' => 'Ticket not found'], 404);
-        //     }
-
-        //     // If your OrderItem has a check-in column, update it here.
-        //     // Example: $item->checked_in_at = now(); $item->save();
-
-        //     return response()->json(['message' => 'Check-in successful', 'item_id' => $item->id]);
-        // }
-
-        // // Otherwise, attempt other matching strategies
-        // $item = OrderItem::where('ticket_code', $code)->first();
-        // if (! $item) {
-        //     return response()->json(['message' => 'Invalid code or not found'], 404);
-        // }
-
-        // $item->attendance_status = 'checked-in';
-        // $item->save();
 
         return redirect()->back()->with(['message' => 'Check-in successful', 'item' => $item]);
     }

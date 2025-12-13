@@ -33,6 +33,7 @@ Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show'
 Route::get('/checkin/scan', [CheckinController::class, 'scan'])->name('checkin.scan');
 Route::get('/checkin/manual', [CheckinController::class, 'manual'])->name('checkin.manual');
 Route::post('/checkin', [CheckinController::class, 'check'])->name('checkin.check');
+Route::get('/checkin/{code}/participant', [CheckinController::class, 'participant'])->name('checkin.participant');
 
 Route::get('/invitation', [InvitationController::class, 'index'])->name('invitation.index');
 Route::get('/invitation/{invitation}', [InvitationController::class, 'show'])->name('invitation.show');

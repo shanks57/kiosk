@@ -6,10 +6,12 @@ import {
     DialogFooter,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { OrderType } from '@/types';
+import { cn } from '@/lib/utils';
+import { OrderItemType } from '@/types';
 import { Link, router } from '@inertiajs/react';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import axios from 'axios';
+import dayjs from 'dayjs';
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import QRCode from 'react-qr-code';
@@ -19,7 +21,7 @@ export default function ScanPage() {
     const [code, setCode] = useState('');
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    const [order, setOrder] = useState<OrderType | null>(null);
+    const [order, setOrder] = useState<OrderItemType | null>(null);
 
     const handleSubmit = async (ticketCode: string) => {
         setLoading(true);
@@ -40,12 +42,30 @@ export default function ScanPage() {
         }
     };
 
+    const handleGetDataParticipant = async (code: string) => {
+        setLoading(true);
+        try {
+            const res = await axios.get(`/checkin/${code}/participant`);
+            setOrder(res.data.item);
+            toast.success(JSON.stringify(res.data));
+            setShowModal(true);
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || 'Check-in failed');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
-        <div className="bg-foreground">
-            <div className="relative mx-auto h-screen w-full max-w-md bg-black">
+        <div className="relative flex min-h-screen w-screen items-center justify-center bg-foreground">
+            <div
+                className={cn(loading && 'fixed inset-0 z-[100] bg-black/50')}
+            />
+            <div className="relative mx-auto aspect-[9/16] h-screen max-h-screen bg-black">
                 <Scanner
+                    paused={loading || showModal}
                     onScan={(result) => {
-                        setShowModal(true);
+                        handleGetDataParticipant(result[0].rawValue);
                         setCode(result[0].rawValue);
                     }}
                     onError={(error) => toast(error?.toString())}
@@ -65,8 +85,8 @@ export default function ScanPage() {
                             {/* Header Image */}
                             <div className="h-40 w-full overflow-hidden bg-black">
                                 <img
-                                    src="/images/invitations/section-1.png"
-                                    alt="APLI Award Header"
+                                    src={order?.order?.event?.banner || ''}
+                                    alt={order?.order?.event?.title || ''}
                                     className="h-full w-full object-cover object-top"
                                 />
                             </div>
@@ -75,10 +95,16 @@ export default function ScanPage() {
                                 {/* Event Title */}
                                 <div>
                                     <h2 className="text-xl font-semibold">
-                                        APLI Award
+                                        {order?.order?.event?.title || ''}
                                     </h2>
                                     <p className="text-sm text-gray-600">
-                                        11-15 December 2025, 12:00
+                                        {dayjs(
+                                            order?.order?.event?.start_time,
+                                        ).format('DD MMM YYYY (ddd)')}{' '}
+                                        ~{' '}
+                                        {dayjs(
+                                            order?.order?.event?.end_time,
+                                        ).format('DD MMM YYYY (ddd)')}
                                     </p>
                                 </div>
 
@@ -91,7 +117,7 @@ export default function ScanPage() {
                                     <div className="flex gap-4">
                                         <QRCode
                                             size={100}
-                                            value={order?.ticket_code || ''}
+                                            value={order?.booking_code || ''}
                                         />
 
                                         <div className="space-y-1 text-sm">
@@ -100,8 +126,8 @@ export default function ScanPage() {
                                                     Company Name
                                                 </p>
                                                 <p className="font-medium">
-                                                    {order?.user?.company
-                                                        ?.name || '-'}
+                                                    {order?.company?.name ||
+                                                        '-'}
                                                 </p>
                                             </div>
                                             <div>
@@ -109,7 +135,8 @@ export default function ScanPage() {
                                                     PIC Name
                                                 </p>
                                                 <p className="font-medium">
-                                                    {order?.user?.name || '-'}
+                                                    {order?.order?.user?.name ||
+                                                        '-'}
                                                 </p>
                                             </div>
                                             <div>
@@ -117,7 +144,8 @@ export default function ScanPage() {
                                                     PIC Email
                                                 </p>
                                                 <p className="font-medium break-all">
-                                                    {order?.user?.email || '-'}
+                                                    {order?.order?.user
+                                                        ?.email || '-'}
                                                 </p>
                                             </div>
                                             <div>
@@ -125,7 +153,8 @@ export default function ScanPage() {
                                                     PIC Phone Number
                                                 </p>
                                                 <p className="font-medium">
-                                                    {'-'}
+                                                    {order?.order?.user
+                                                        ?.phone || '-'}
                                                 </p>
                                             </div>
                                             <div>
@@ -133,7 +162,8 @@ export default function ScanPage() {
                                                     Participant
                                                 </p>
                                                 <p className="font-medium">
-                                                    3 Participants
+                                                    {order?.participant
+                                                        ?.length || '-'}
                                                 </p>
                                             </div>
                                         </div>
