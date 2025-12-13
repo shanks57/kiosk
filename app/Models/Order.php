@@ -14,6 +14,7 @@ class Order extends Model
         'total_amount',
         'ticket_code',
         'attendance_status',
+        'last_checkin_time',
     ];
 
     protected static function booted()
@@ -51,5 +52,10 @@ class Order extends Model
     public function payment()
     {
         return $this->hasOne(Payment::class);
+    }
+
+    public function participants()
+    {
+        return $this->hasManyThrough(Participant::class, OrderItem::class);
     }
 }

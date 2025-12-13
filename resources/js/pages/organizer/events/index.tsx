@@ -32,7 +32,6 @@ import {
     useReactTable,
 } from '@tanstack/react-table';
 import axios from 'axios';
-import dayjs from 'dayjs';
 import { Eye, Trash } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -89,33 +88,16 @@ export default function EventsPage(props: {
             header: 'Last Check In',
             cell: ({ row }) => (
                 <span className="text-sm">
-                    {dayjs(row.getValue('end_time')).format('DD MMMM YYYY')}
+                    -
+                    {/* {dayjs(row.getValue('end_time')).format('DD MMMM YYYY')} */}
                 </span>
             ),
         },
-        {
-            accessorKey: '',
-            header: 'Status',
-            cell: ({ row }) => {
-                const v: string = row.getValue('status');
-                return (
-                    <span
-                        className={
-                            v === 'Check-In'
-                                ? 'rounded bg-blue-100 px-2 py-1 text-xs text-blue-600'
-                                : 'rounded bg-red-100 px-2 py-1 text-xs text-red-600'
-                        }
-                    >
-                        {v || 'Absence'}
-                    </span>
-                );
-            },
-        },
+
         {
             accessorKey: 'action',
             header: 'Action',
             cell: ({ row }) => {
-                const v: string = row.getValue('status');
                 return (
                     <div className="flex items-center gap-2">
                         <Link href={`/dashboard/events/${row.original.id}`}>

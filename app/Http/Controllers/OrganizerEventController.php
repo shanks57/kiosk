@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Organizer;
 use App\Models\TicketCategory;
@@ -90,17 +91,31 @@ class OrganizerEventController extends Controller
         $event->load(['venue', 'sections.seats', 'organizer.user', 'ticketCategories']);
         $ticketCategories = TicketCategory::where('event_id', $event->id)->get();
 
-        $participants = OrderItem::whereHas('order', function ($q) use ($event) {
-            $q->where('event_id', $event->id);
-        })
-            ->with(['order.user.company', 'seat', 'category'])
+        $eventSeats = $event->seats()->with('eventSection')->paginate(100);
+
+        $participants = Order::where('event_id', $event->id)
+            ->with([
+                'user.company',
+                'items.seat',
+                'items.participant.user',
+                'items.company',
+            ])
             ->paginate(20)
-            ->withQueryString();
+            ->withQueryString()
+            ->through(function ($order) {
+                $order->participant_count = $order->items->sum(function ($item) {
+                    return $item->participant->count();
+                });
+                return $order;
+            });
+
 
         return Inertia::render('organizer/events/show', [
             'event' => $event,
             'ticketCategories' => $ticketCategories,
             'participants' => $participants,
+            'eventSeats' => $eventSeats,
+            'eventSections' => $event->sections,
         ]);
     }
 
@@ -156,7 +171,7 @@ class OrganizerEventController extends Controller
         $organizer = $user->organizer;
 
         $event = Event::where('id', $eventId)->firstOrFail();
-        
+
         abort_if($event->organizer_id != $organizer?->id, 403);
 
         $event->delete();

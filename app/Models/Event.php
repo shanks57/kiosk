@@ -30,6 +30,16 @@ class Event extends Model
         return $this->hasMany(EventSection::class);
     }
 
+    public function seats()
+    {
+        return $this->hasManyThrough(
+            EventSeat::class,
+            EventSection::class,
+            'event_id',
+            'event_section_id'
+        );
+    }
+
     public function orders()
     {
         return $this->hasMany(\App\Models\Order::class);

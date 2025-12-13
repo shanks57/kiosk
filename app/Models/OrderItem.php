@@ -12,8 +12,14 @@ class OrderItem extends Model
         'event_seat_id',
         'ticket_category_id',
         'price',
+        'event_date',
+        'company_id',
         'booking_code',
         'status',
+    ];
+
+    protected $casts = [
+        'event_date' => 'datetime',
     ];
 
     protected static function booted()
@@ -46,5 +52,15 @@ class OrderItem extends Model
     public function category()
     {
         return $this->belongsTo(TicketCategory::class, 'ticket_category_id');
+    }
+
+    public function participant()
+    {
+        return $this->hasMany(Participant::class, 'order_item_id');
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }

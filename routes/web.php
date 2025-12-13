@@ -13,6 +13,11 @@ use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\LotteryController;
 use App\Http\Controllers\TicketCategoryController;
+use App\Http\Controllers\EventSeatController;
+use App\Http\Controllers\EventSectionController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\CompanyController;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
@@ -42,8 +47,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Route::get('dashboard/organizer', [DashboardController::class, 'dashboardOrganizer'])->name('dashboard.organizer');
     // Route::get('dashboard/user', [DashboardController::class, 'dashboardUser'])->name('dashboard.user');
 
+    // User profile routes
+    Route::post('/dashboard/users/{user}/update-profile', [UserController::class, 'updateProfile'])->name('users.update-profile');
+
     // Checkout routes
-    
+
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/event-checkout', [CheckoutController::class, 'event'])->name('checkout.event');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
@@ -65,8 +73,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/{event}/participants', [ParticipantController::class, 'index'])->name('participants');
         Route::post('/{event}/participants', [ParticipantController::class, 'store'])->name('participants.store');
-        Route::delete('/{event}/participants/{id}', [ParticipantController::class, 'destroy'])->name('participants.destroy');
+        // Route::delete('/{event}/participants/{id}', [ParticipantController::class, 'destroy'])->name('participants.destroy');
         Route::get('/{event}/participants/export', [ParticipantController::class, 'export'])->name('participants.export');
+
+        // Add participant from order item modal
+        Route::post('/{event}/order-items/{orderItem}/participants', [ParticipantController::class, 'storeFromOrderItem'])->name('order-items.participants.store');
+        Route::delete('/{event}/participants/{participant}', [ParticipantController::class, 'destroyParticipant'])->name('participants.destroy-participant');
+        Route::put('/{event}/participants/{participant}', [ParticipantController::class, 'updateParticipant'])->name('participants.update-participant');
 
         // Ticket categories CRUD for an event
         Route::get('/{event}/ticket-categories', [TicketCategoryController::class, 'index'])->name('ticket-categories.index');
@@ -75,6 +88,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{event}/ticket-categories/{category}/edit', [TicketCategoryController::class, 'edit'])->name('ticket-categories.edit');
         Route::put('/{event}/ticket-categories/{category}', [TicketCategoryController::class, 'update'])->name('ticket-categories.update');
         Route::delete('/{event}/ticket-categories/{category}', [TicketCategoryController::class, 'destroy'])->name('ticket-categories.destroy');
+
+        // Event sections CRUD for an event
+        Route::post('/{event}/sections', [EventSectionController::class, 'store'])->name('sections.store');
+        Route::put('/{event}/sections/{section}', [EventSectionController::class, 'update'])->name('sections.update');
+        Route::delete('/{event}/sections/{section}', [EventSectionController::class, 'destroy'])->name('sections.destroy');
+
+        // Event seats CRUD for an event
+        Route::get('/{event}/seats', [EventSeatController::class, 'index'])->name('seats.index');
+        Route::post('/{event}/seats', [EventSeatController::class, 'store'])->name('seats.store');
+        Route::put('/{event}/seats/{seat}', [EventSeatController::class, 'update'])->name('seats.update');
+        Route::delete('/{event}/seats/{seat}', [EventSeatController::class, 'destroy'])->name('seats.destroy');
+
+        // Order delete
+        Route::delete('/{event}/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+
+        // Company logo management (upload / delete)
+        Route::post('/companies/{company}/logo', [CompanyController::class, 'storeLogo'])->name('companies.logo.store');
+        Route::delete('/companies/{company}/logo', [CompanyController::class, 'destroyLogo'])->name('companies.logo.destroy');
     });
 });
 

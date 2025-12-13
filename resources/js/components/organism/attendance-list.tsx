@@ -2,23 +2,6 @@ import { ParticipantModal } from '@/components/modals/participant-modal';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import {
-    Sheet,
-    SheetContent,
-    SheetTitle,
-    SheetTrigger,
-} from '@/components/ui/sheet';
-import {
     Table,
     TableBody,
     TableCell,
@@ -27,9 +10,8 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { AttendancePageProps } from '@/pages/organizer/events/show';
-import { ParticipantType } from '@/types';
-import { Link } from '@inertiajs/react';
-import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
+import { OrderType } from '@/types';
+import { Link, router } from '@inertiajs/react';
 import {
     ColumnDef,
     flexRender,
@@ -40,116 +22,93 @@ import {
     SortingState,
     useReactTable,
 } from '@tanstack/react-table';
-import axios from 'axios';
-import dayjs from 'dayjs';
-import {
-    ArrowLeft,
-    Eye,
-    MessageCircleQuestion,
-    Ticket,
-    Trash,
-} from 'lucide-react';
-import { useRef, useState } from 'react';
-import QRCode from 'react-qr-code';
+import { MessageCircleQuestion, Trash } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
+import ParticipantDetailModal from '../modals/participant-detail-modal';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '../ui/dialog';
 export const AttendanceList = (props: AttendancePageProps) => {
-    console.log(props);
     const { event, ticketCategories, participants } = props;
-    const [sorting, setSorting] = useState<SortingState>([]);
+
     const [filter, setFilter] = useState('');
+    const [sorting, setSorting] = useState<SortingState>([]);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState<OrderType | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
-    const [seats, setSeats] = useState([
-        { id: 1, value: '2C' },
-        { id: 2, value: '2C' },
-    ]);
-    const [printCode, setPrintCode] = useState<string | null>(null);
-    const qrWrapperRef = useRef<HTMLDivElement | null>(null);
-
-    const addSeat = () => {
-        const newId = seats.length ? seats[seats.length - 1].id + 1 : 1;
-        setSeats([...seats, { id: newId, value: '' }]);
+    const handleDeleteOrder = async () => {
+        if (!selectedOrder) return;
+        setIsDeleting(true);
+        try {
+            router.delete(
+                `/dashboard/events/${event.id}/orders/${selectedOrder.id}`,
+                {
+                    onSuccess: () => {
+                        toast.success('Order deleted successfully');
+                        setDeleteDialogOpen(false);
+                        setSelectedOrder(null);
+                    },
+                    onError: (errors) => {
+                        console.error('Delete error:', errors);
+                        toast.error('Failed to delete order');
+                    },
+                },
+            );
+        } catch (error) {
+            toast.error('Error deleting order');
+            console.error(error);
+        } finally {
+            setIsDeleting(false);
+        }
     };
 
-    const updateSeat = (id: number, value: string) => {
-        setSeats(seats.map((s) => (s.id === id ? { ...s, value } : s)));
+    const handleOpenDeleteDialog = (order: OrderType) => {
+        setSelectedOrder(order);
+        setDeleteDialogOpen(true);
     };
 
-    const removeSeat = (id: number) => {
-        setSeats(seats.filter((s) => s.id !== id));
-    };
-
-    const handleDelete = (id: number) => {
-        axios
-            .delete('/dashboard/events/' + event.id + '/participants/' + id)
-            .then(() => {
-                window.location.reload();
-            })
-            .catch((error) => {
-                toast(error.response.data.message);
-            });
-    };
-
-    const columns: ColumnDef<ParticipantType>[] = [
+    const columns: ColumnDef<OrderType>[] = [
         {
-            accessorKey: 'booking_code',
+            accessorKey: 'ticket_code',
             header: 'Event Code',
-            cell: ({ row }) => row.id,
+            cell: ({ row }) => (
+                <span>{row.original.ticket_code?.toUpperCase()}</span>
+            ),
         },
         {
-            accessorKey: 'order.user.company',
+            accessorKey: 'user.company.name',
             header: 'Company',
-            cell: ({ row }) => {
-                const v: string | undefined =
-                    row.getValue('order.user.company') || undefined;
-                return <span className="text-sm">{v || 'N/A'}</span>;
-            },
         },
-        { accessorKey: 'order.user.name', header: 'PIC' },
-        { accessorKey: 'order.user.email', header: 'Email PIC' },
+        { accessorKey: 'user.name', header: 'PIC' },
+        { accessorKey: 'user.email', header: 'Email PIC' },
         {
-            accessorKey: 'order.user.phone',
+            accessorKey: 'user.phone',
             header: 'No PIC',
-            cell: ({ row }) => {
-                const v: string | undefined =
-                    row.getValue('order.user.phone') || undefined;
-                return <span className="text-sm">{v || 'N/A'}</span>;
-            },
         },
         {
-            accessorKey: 'participant',
+            accessorKey: 'participant_count',
             header: 'Participant',
-            cell: ({ row }) => {
-                const v: string | undefined =
-                    row.getValue('participant') || undefined;
-                return <span className="text-sm">{v || 'N/A'}</span>;
-            },
         },
         {
-            accessorKey: 'date',
+            accessorKey: 'last_checkin_time',
             header: 'Last Check In',
-            cell: ({ row }) => {
-                const v: string | undefined = row.getValue('date') || undefined;
-                return (
-                    <span className="text-sm">
-                        {v ? dayjs(v).format('YYYY-MM-DD') : 'N/A'}
-                    </span>
-                );
-            },
         },
         {
-            accessorKey: 'order.attendance_status',
+            accessorKey: 'attendance_status',
             header: 'Status',
             cell: ({ row }) => {
-                const value = row.original.order.attendance_status;
+                const v: string | undefined =
+                    row.getValue('attendance_status') || undefined;
                 return (
-                    <span
-                        className={
-                            value !== 'absent'
-                                ? 'rounded bg-blue-100 px-2 py-1 text-xs text-blue-600'
-                                : 'rounded bg-red-100 px-2 py-1 text-xs text-red-600'
-                        }
-                    >
-                        {value || 'Absence'}
+                    <span className="rounded-sm bg-red-200 px-2 py-1 text-sm">
+                        {v}
                     </span>
                 );
             },
@@ -158,333 +117,23 @@ export const AttendanceList = (props: AttendancePageProps) => {
             accessorKey: 'action',
             header: 'Action',
             cell: ({ row }) => {
-                const v: string = row.getValue('status');
-                const data = row.original;
+                const data: OrderType = row.original;
                 return (
-                    <div className="flex items-center gap-2">
-                        <Sheet>
-                            <SheetTrigger asChild>
-                                <span className="text-sm">
-                                    <Eye size={16} className="text-gray-500" />
-                                </span>
-                            </SheetTrigger>
-                            <SheetContent className="!max-w-2xl gap-0 space-y-0">
-                                <div className="w-full border-b p-2">
-                                    <Button variant="ghost">
-                                        <ArrowLeft className="mr-2 h-4 w-4" />
-                                    </Button>
-                                </div>
-                                <div className="grid h-full grid-cols-2">
-                                    {/* Left Section - Participant Information */}
-                                    <div className="h-full border p-6">
-                                        <SheetTitle className="mb-4 text-lg font-semibold">
-                                            Participant Information
-                                        </SheetTitle>
-                                        {/* <h2 className="mb-4 text-lg font-semibold">
-                                            Participant Information
-                                        </h2> */}
-                                        <div className="text-sm">
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between text-sm">
-                                                    <Label>Company Name</Label>
-                                                    <span className="font-medium">
-                                                        {
-                                                            data.order.user
-                                                                ?.company?.name
-                                                        }
-                                                    </span>
-                                                </div>
-                                                <Separator />
-                                                <div className="flex justify-between text-sm">
-                                                    <Label>PIC Name</Label>
-                                                    <span className="font-medium">
-                                                        {data.order.user?.name}
-                                                    </span>
-                                                </div>
-                                                <Separator />
-                                                <div className="flex justify-between text-sm">
-                                                    <Label>PIC Email</Label>
-                                                    <span className="font-medium">
-                                                        {data.order.user?.email}
-                                                    </span>
-                                                </div>
-                                                <Separator />
-                                                <div className="flex justify-between text-sm">
-                                                    <Label>
-                                                        PIC Phone Number
-                                                    </Label>
-                                                    <span className="font-medium">
-                                                        {/* {data.order.user} */}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                    <div className="flex gap-3">
+                        <ParticipantDetailModal data={data} event={event} />
 
-                                    {/* Right Section - Ticket Information */}
-                                    <div className="h-full">
-                                        <div className="flex cursor-pointer items-center justify-start gap-1 border-b p-2 text-sm text-primary">
-                                            <Ticket /> Ticket
-                                        </div>
-                                        <div className="p-2">
-                                            <div className="h-full space-y-6 rounded-md border p-4">
-                                                <h3 className="text-lg font-medium">
-                                                    Ticket Information
-                                                </h3>
-
-                                                {/* QR Placeholder */}
-                                                <div className="flex gap-4">
-                                                    <div className="flex h-40 w-40 items-center justify-center rounded-md bg-gray-200">
-                                                        <QRCode
-                                                            value={
-                                                                data.order
-                                                                    ?.ticket_code ||
-                                                                ''
-                                                            }
-                                                        />
-                                                    </div>
-                                                    <span className="text-base font-medium">
-                                                        {
-                                                            data?.order
-                                                                ?.ticket_code
-                                                        }
-                                                    </span>
-                                                </div>
-
-                                                <div className="border-t-dashed-custom"></div>
-                                                {/* Seat Information */}
-                                                <div>
-                                                    <h4 className="mb-3 font-medium">
-                                                        Seat Information
-                                                    </h4>
-                                                    <div>
-                                                        <Label className="">
-                                                            Participant Name
-                                                        </Label>
-                                                        <Input />
-                                                    </div>
-                                                    <div>
-                                                        <Label className="">
-                                                            Phone Number
-                                                        </Label>
-                                                        <Input />
-                                                    </div>
-                                                    <div className="flex items-center justify-between">
-                                                        <Label className="">
-                                                            Seat Information
-                                                        </Label>
-                                                        <div className="flex items-center gap-2">
-                                                            <Input
-                                                                type="text"
-                                                                className="w-24 py-1"
-                                                                // value={
-                                                                //     seat.value
-                                                                // }
-                                                                // onChange={(e) =>
-                                                                //     updateSeat(
-                                                                //         seat.id,
-                                                                //         e.target
-                                                                //             .value,
-                                                                //     )
-                                                                // }
-                                                            />
-                                                            <Trash
-                                                                className="h-5 w-5 cursor-pointer text-foreground/50"
-                                                                // onClick={() =>
-                                                                //     removeSeat(
-                                                                //         seat.id,
-                                                                //     )
-                                                                // }
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    {/* <div className="space-y-2">
-                                                        {seats.map(
-                                                            (seat, index) => (
-                                                                <div
-                                                                    key={
-                                                                        seat.id
-                                                                    }
-                                                                    className="flex items-center justify-between"
-                                                                >
-                                                                    <Label className="w-20">
-                                                                        Seat{' '}
-                                                                        {index +
-                                                                            1}
-                                                                    </Label>
-                                                                    <div className="flex items-center gap-2">
-                                                                        <Input
-                                                                            type="text"
-                                                                            className="w-24 py-1"
-                                                                            value={
-                                                                                seat.value
-                                                                            }
-                                                                            onChange={(
-                                                                                e,
-                                                                            ) =>
-                                                                                updateSeat(
-                                                                                    seat.id,
-                                                                                    e
-                                                                                        .target
-                                                                                        .value,
-                                                                                )
-                                                                            }
-                                                                        />
-                                                                        <Trash
-                                                                            className="h-5 w-5 cursor-pointer text-foreground/50"
-                                                                            onClick={() =>
-                                                                                removeSeat(
-                                                                                    seat.id,
-                                                                                )
-                                                                            }
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            ),
-                                                        )}
-                                                    </div> */}
-
-                                                    <div className="flex justify-end">
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="mt-2 text-right text-primary"
-                                                            onClick={addSeat}
-                                                        >
-                                                            + Add Participant
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </SheetContent>
-                        </Sheet>
-                        <Dialog>
-                            <DialogTrigger asChild>
-                                <span className="text-sm">
-                                    <Trash
-                                        size={16}
-                                        className="text-gray-500"
-                                    />
-                                </span>
-                            </DialogTrigger>
-                            <DialogContent>
-                                <DialogHeader>
-                                    <DialogTitle>
-                                        Delete Participant?
-                                    </DialogTitle>
-                                    <DialogDescription>
-                                        Are you sure delete participant{' '}
-                                        {row.original.order?.user?.name} ?
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <DialogFooter className="flex justify-end gap-2 p-2">
-                                    <DialogClose asChild>
-                                        <Button type="button" variant="default">
-                                            Cancel
-                                        </Button>
-                                    </DialogClose>
-                                    <Button
-                                        onClick={() =>
-                                            handleDelete(row.original.order_id)
-                                        }
-                                        type="button"
-                                        variant="ghost"
-                                    >
-                                        Delete
-                                    </Button>
-                                </DialogFooter>
-                            </DialogContent>
-                        </Dialog>
                         <button
-                            className="text-sm text-primary"
-                            onClick={() => handleDownload(data)}
+                            onClick={() => handleOpenDeleteDialog(data)}
+                            className="text-sm transition-colors hover:text-red-600"
+                            title="Delete order"
                         >
-                            Download Ticket
+                            <Trash size={16} className="text-gray-500" />
                         </button>
                     </div>
                 );
             },
         },
     ];
-
-    const handleDownload = (data: ParticipantType) => {
-        const code = data.order?.ticket_code || '';
-        // render QR into hidden container
-        setPrintCode(code);
-
-        // allow DOM to update and then grab svg
-        setTimeout(() => {
-            const wrapper = qrWrapperRef.current;
-            const svg = wrapper?.querySelector('svg');
-            const svgHtml = svg
-                ? new XMLSerializer().serializeToString(svg)
-                : '';
-
-            const userName = data.order?.user?.name || '';
-            const email = data.order?.user?.email || '';
-            const eventTitle = event.title || '';
-            const eventDate = event.start_time || event.start_time || '';
-
-            const html = `
-                                <html>
-                                <head>
-                                    <meta charset="utf-8" />
-                                    <title>Ticket ${code}</title>
-                                    <style>
-                                        body { font-family: Arial, Helvetica, sans-serif; padding: 20px; }
-                                        .ticket { border: 1px solid #ddd; padding: 20px; max-width: 600px; }
-                                        .header { display:flex; align-items:center; justify-content:space-between }
-                                        .qr { width:250px; height:250px }
-                                        .meta { margin-left: 20px }
-                                        .meta h2 { margin: 0 0 8px 0 }
-                                        .meta p { margin: 2px 0 }
-                                    </style>
-                                </head>
-                                <body>
-                                    <div class="ticket">
-                                        <div class="header">
-                                            <div class="meta">
-                                                <h2>${escapeHtml(eventTitle)}</h2>
-                                                <p><strong>Date:</strong> ${escapeHtml(eventDate)}</p>
-                                                <p><strong>Name:</strong> ${escapeHtml(userName)}</p>
-                                                <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-                                                <p><strong>Ticket Code:</strong> ${escapeHtml(code)}</p>
-                                            </div>
-                                            <div class="qr">${svgHtml}</div>
-                                        </div>
-                                    </div>
-                                </body>
-                                </html>
-                        `;
-
-            const w = window.open('', '_blank');
-            if (w) {
-                w.document.open();
-                w.document.write(html);
-                w.document.close();
-                // give time to render then call print
-                setTimeout(() => {
-                    w.print();
-                }, 500);
-            } else {
-                toast('Unable to open print window. Please allow popups.');
-            }
-            // clear printCode
-            setPrintCode(null);
-        }, 100);
-    };
-
-    const escapeHtml = (unsafe: string) => {
-        return unsafe
-            .replaceAll('&', '&amp;')
-            .replaceAll('<', '&lt;')
-            .replaceAll('>', '&gt;')
-            .replaceAll('"', '&quot;')
-            .replaceAll("'", '&#039;');
-    };
 
     const table = useReactTable({
         data: participants.data,
@@ -542,7 +191,7 @@ export const AttendanceList = (props: AttendancePageProps) => {
                 </div>
                 <div className="min-h-[60vh] rounded-md border bg-white">
                     {/* Hidden QR renderer used for ticket print/export */}
-                    <div
+                    {/* <div
                         ref={qrWrapperRef as any}
                         style={{
                             position: 'absolute',
@@ -552,7 +201,7 @@ export const AttendanceList = (props: AttendancePageProps) => {
                         }}
                     >
                         {printCode ? <QRCode value={printCode} /> : null}
-                    </div>
+                    </div> */}
                     <Table>
                         <TableHeader>
                             {table.getHeaderGroups().map((hg) => (
@@ -616,6 +265,52 @@ export const AttendanceList = (props: AttendancePageProps) => {
                     </Button>
                 </div>
             </Card>
+
+            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Delete Order</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to delete this order? This
+                            action cannot be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+                    {selectedOrder && (
+                        <div className="space-y-2 py-4">
+                            <p className="text-sm">
+                                <span className="font-semibold">
+                                    Ticket Code:
+                                </span>{' '}
+                                {selectedOrder.ticket_code}
+                            </p>
+                            <p className="text-sm">
+                                <span className="font-semibold">Company:</span>{' '}
+                                {selectedOrder.user?.company?.name}
+                            </p>
+                            <p className="text-sm">
+                                <span className="font-semibold">PIC:</span>{' '}
+                                {selectedOrder.user?.name}
+                            </p>
+                        </div>
+                    )}
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => setDeleteDialogOpen(false)}
+                            disabled={isDeleting}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={handleDeleteOrder}
+                            disabled={isDeleting}
+                        >
+                            {isDeleting ? 'Deleting...' : 'Delete'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

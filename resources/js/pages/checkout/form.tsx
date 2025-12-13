@@ -104,7 +104,6 @@ export default function PaymentPage(
     };
 
     const handlePaid = () => {
-        console.log(tickets, 'TICKETS');
         const ticketIds = Object.entries(tickets).map(
             ([ticketName, ticketCount]) => ({
                 ticket_category_id: ticketCategories.find(

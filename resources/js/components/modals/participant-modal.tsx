@@ -11,15 +11,9 @@ import { Label } from '@/components/ui/label';
 import { TicketCategoryType } from '@/types';
 import { DialogClose, DialogTrigger } from '@radix-ui/react-dialog';
 import axios from 'axios';
+import { FileImage, Upload, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '../ui/select';
 
 interface ParticipantModalProps {
     eventId: number;
@@ -35,6 +29,7 @@ export function ParticipantModal({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
+
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -43,7 +38,38 @@ export function ParticipantModal({
         company_name: '',
         company_logo: null as File | null,
     });
+
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [file, setFile] = useState<File | null>(null);
+    const [preview, setPreview] = useState<string | null>(null);
+    const [dragging, setDragging] = useState(false);
+
+    // FILE
+
+    function handleFile(file: File) {
+        if (!file.type.startsWith('image/')) return;
+
+        setFile(file);
+        setPreview(URL.createObjectURL(file));
+        setFormData((prev) => ({ ...prev, company_logo: file }));
+        // onChange(file);
+    }
+
+    function onDrop(e: React.DragEvent) {
+        e.preventDefault();
+        setDragging(false);
+
+        const droppedFile = e.dataTransfer.files[0];
+        if (droppedFile) handleFile(droppedFile);
+    }
+
+    function removeFile() {
+        setFile(null);
+        setPreview(null);
+        setFormData((prev) => ({ ...prev, company_logo: null }));
+        // onChange(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -108,7 +134,7 @@ export function ParticipantModal({
     };
 
     return (
-        <Dialog onOpenChange={(open) => setModalOpen(open)}>
+        <Dialog open={modalOpen} onOpenChange={(open) => setModalOpen(open)}>
             <DialogTrigger asChild>
                 <Button>Add Participant</Button>
             </DialogTrigger>
@@ -122,17 +148,29 @@ export function ParticipantModal({
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {error && (
-                        <div className="rounded-md bg-red-100 p-3 text-sm text-red-700">
+                        <div className="rounded-sm bg-red-100 p-3 text-sm text-red-700">
                             {error}
                         </div>
                     )}
 
                     <div className="space-y-2">
-                        <Label htmlFor="name">Full Name *</Label>
+                        <Label htmlFor="company_name">Company *</Label>
+                        <Input
+                            required
+                            id="company_name"
+                            name="company_name"
+                            placeholder="Enter company name"
+                            value={formData.company_name}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="name">PIC Name *</Label>
                         <Input
                             id="name"
                             name="name"
-                            placeholder="Enter participant name"
+                            placeholder="Enter PIC name"
                             value={formData.name}
                             onChange={handleChange}
                             required
@@ -140,23 +178,12 @@ export function ParticipantModal({
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="company_name">Company Name</Label>
-                        <Input
-                            id="company_name"
-                            name="company_name"
-                            placeholder="Enter company name (optional)"
-                            value={formData.company_name}
-                            onChange={handleChange}
-                        />
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="email">Email *</Label>
+                        <Label htmlFor="email">PIC Email *</Label>
                         <Input
                             id="email"
                             name="email"
                             type="email"
-                            placeholder="Enter participant email"
+                            placeholder="Enter PIC email"
                             value={formData.email}
                             onChange={handleChange}
                             required
@@ -164,18 +191,18 @@ export function ParticipantModal({
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="phone">Phone Number</Label>
+                        <Label htmlFor="phone">PIC Phone Number</Label>
                         <Input
                             id="phone"
                             name="phone"
                             type="tel"
-                            placeholder="Enter phone number (optional)"
+                            placeholder="Enter PIC phone number"
                             value={formData.phone}
                             onChange={handleChange}
                         />
                     </div>
 
-                    <div className="space-y-2">
+                    {/* <div className="space-y-2">
                         <Label htmlFor="ticket_category">
                             Ticket Category *
                         </Label>
@@ -197,13 +224,13 @@ export function ParticipantModal({
                                 ))}
                             </SelectContent>
                         </Select>
-                    </div>
+                    </div> */}
 
                     <div className="space-y-2">
                         <Label htmlFor="company_logo">
                             Company Image (optional)
                         </Label>
-                        <input
+                        {/* <input
                             ref={fileInputRef}
                             id="company_logo"
                             name="company_logo"
@@ -211,7 +238,83 @@ export function ParticipantModal({
                             accept="image/*"
                             onChange={handleFileChange}
                             className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
-                        />
+                        /> */}
+                        {!file ? (
+                            <div
+                                onDragOver={(e) => {
+                                    e.preventDefault();
+                                    setDragging(true);
+                                }}
+                                onDragLeave={() => setDragging(false)}
+                                onDrop={onDrop}
+                                className={`flex items-center justify-center gap-4 rounded-xs border bg-gray-50 px-6 py-8 transition ${dragging ? 'border-primary bg-primary/5' : 'border-gray-200'} `}
+                            >
+                                <Button
+                                    type="button"
+                                    onClick={() =>
+                                        fileInputRef.current?.click()
+                                    }
+                                    className="gap-2"
+                                >
+                                    <Upload size={18} />
+                                    Browse file
+                                </Button>
+
+                                <span className="text-sm text-muted-foreground">
+                                    or drag and drop
+                                </span>
+
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    hidden
+                                    onChange={(e) =>
+                                        e.target.files &&
+                                        handleFile(e.target.files[0])
+                                    }
+                                />
+                            </div>
+                        ) : (
+                            <div className="overflow-hidden rounded-xl border">
+                                {/* Preview */}
+                                <div className="flex justify-center bg-gray-100 p-6">
+                                    <img
+                                        src={preview!}
+                                        alt="Preview"
+                                        className="h-32 w-32 object-contain"
+                                    />
+                                </div>
+
+                                {/* File info */}
+                                <div className="flex items-center justify-between bg-gray-50 px-4 py-3">
+                                    <div className="flex items-center gap-3">
+                                        <FileImage className="text-muted-foreground" />
+                                        <div className="text-sm">
+                                            <p className="font-medium">
+                                                {file.name}
+                                            </p>
+                                            <p className="text-muted-foreground">
+                                                {(
+                                                    file.size /
+                                                    1024 /
+                                                    1024
+                                                ).toFixed(1)}{' '}
+                                                MB
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={removeFile}
+                                        className="text-muted-foreground hover:text-red-500"
+                                    >
+                                        <X size={18} />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex justify-end gap-3 pt-4">

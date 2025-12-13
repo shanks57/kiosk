@@ -73,11 +73,13 @@ export interface OrderItemType {
     order_id?: number;
     event_seat_id?: number;
     ticket_category_id?: number;
+    booking_code?: string | null;
     price?: number | null;
     created_at?: string | null;
     updated_at?: string | null;
     seat?: EventSeatType | null;
     category?: TicketCategoryType | null;
+    participant?: ParticipantType[];
     // [key: string]: unknown;
 }
 
@@ -102,7 +104,8 @@ export interface OrderType {
     total_amount?: number | null;
     created_at?: string | null;
     updated_at?: string | null;
-    ticket_code? : string;
+    ticket_code?: string;
+
     attendance_status?: string | null;
     items?: OrderItemType[];
     payment?: PaymentType | null;
@@ -171,6 +174,7 @@ export interface UserType {
     name: string;
     email: string;
     avatar?: string;
+    phone?: string;
     email_verified_at?: string | null;
     two_factor_enabled?: boolean;
     created_at?: string | null;
@@ -184,13 +188,15 @@ export interface UserType {
 
 export type ParticipantType = {
     id: number;
-    order_id: number;
-    event_seat_id: number | null;
-    price: number;
-    seat: EventSeatType | null;
-    ticket_category_id: number;
-    category: TicketCategoryType;
-    order: OrderType;
+    order_item_id: number;
+    event_id: number;
+    event_date: string;
+    user_id: number;
+    seat_id?: number | null;
+    user?: UserType;
+    order_item?: OrderItemType;
+    seat?: EventSeatType;
+    company_id?: number | null;
     created_at?: string | null;
     updated_at?: string | null;
 };
