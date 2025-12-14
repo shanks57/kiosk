@@ -117,7 +117,7 @@ export default function ParticipantDetailModal(
             }
 
             const svgHtml = new XMLSerializer().serializeToString(svg);
-
+            
             const html = generateTicketHtml({
                 code,
                 eventTitle: event.title || '',

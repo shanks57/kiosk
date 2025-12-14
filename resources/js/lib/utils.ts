@@ -136,7 +136,7 @@ ${(participants || [])
     <div class="info-row"><strong>Name:</strong> ${escapeHtml(p.user?.name || '-')}</div>
     <div class="info-row"><strong>Email:</strong> ${escapeHtml(p.user?.email || '-')}</div>
     <div class="info-row"><strong>Phone:</strong> ${escapeHtml(p.user?.phone || '-')}</div>
-    <div class="info-row"><strong>Seat:</strong> ${escapeHtml(p.seat?.seat_number?.toString() || '-')}</div>
+    <div class="info-row"><strong>Seat:</strong> ${escapeHtml(p.seat?.row_number?.toString() + ' - ' + p.seat?.seat_number?.toString() || '-')}</div>
 </div>
 `,
     )

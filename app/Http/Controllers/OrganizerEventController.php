@@ -103,6 +103,7 @@ class OrganizerEventController extends Controller
                 'user.company',
                 'items.seat',
                 'items.participant.user',
+                'items.participant.seat',
                 'items.company',
             ])
             ->paginate(100)
