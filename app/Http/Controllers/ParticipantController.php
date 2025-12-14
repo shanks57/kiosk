@@ -275,7 +275,7 @@ class ParticipantController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email',
             'phone' => 'nullable|string|max:20',
-            'seat' => 'nullable|string|max:50',
+            'seat_id' => 'nullable|exists:event_seats,id',
             'user_id' => 'required|exists:users,id',
             'event_id' => 'required|exists:events,id',
         ]);
@@ -310,7 +310,7 @@ class ParticipantController extends Controller
             'event_id' => $validated['event_id'],
             'event_date' => $event->start_date ?? now(),
             'user_id' => $participant->id,
-            'seat_id' => null, // Seat reference can be added if you have seat management
+            'seat_id' => $validated['seat_id'], // Seat reference can be added if you have seat management
             'company_id' => $participant->company_id,
         ]);
 

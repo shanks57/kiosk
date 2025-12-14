@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Toaster } from '@/components/ui/sonner';
 import { OrderItemType } from '@/types';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
@@ -47,6 +47,7 @@ export default function InvitationDetail(props: {
                     ? 'Participants marked as attending'
                     : 'Participants marked as not attending',
             );
+            router.visit(`/invitation/${code}`, { preserveState: true });
         } catch (error: any) {
             toast.error(
                 error.response?.data?.message || 'Failed to submit attendance',
@@ -57,74 +58,76 @@ export default function InvitationDetail(props: {
     };
 
     return (
-        <div className="flex min-h-screen w-full flex-col bg-foreground/5 dark:bg-primary">
+        <div className="flex min-h-screen w-screen flex-col bg-foreground/5 dark:bg-primary">
             <Toaster />
-            <div className="flex items-center justify-between bg-white p-4">
-                <h4 className="text-xs font-medium dark:text-secondary">
+            <div className="flex items-center justify-between bg-white p-3">
+                <h4 className="text-[10px] font-medium dark:text-secondary">
                     This Ticketing System <br /> Powered by
                 </h4>
                 <Link href="/">
                     <img
-                        className="h-5 w-auto"
+                        className="h-4 w-auto"
                         src="/assets/icon.svg"
                         alt="tron-logo"
                     />
                 </Link>
             </div>
-            <div className="mx-auto w-full max-w-md flex-col gap-y-4 pb-18">
-                <div className="mx-auto min-h-screen w-full space-y-3 dark:text-secondary">
+            <div className="w-full flex-col gap-y-3 overflow-y-auto pb-24">
+                <div className="w-full space-y-3 dark:text-secondary">
                     {/* Header */}
 
                     {/* Company Info */}
                     <div className="bg-white">
-                        <div className="flex items-center gap-3 border-b p-4 text-xl font-medium">
-                            <Link href="/invitation">
-                                <ArrowLeft className="h-5 w-5" />
+                        <div className="flex items-center gap-2 border-b p-3 text-base font-medium">
+                            <Link href={`/invitation/${code}`} className="p-1">
+                                <ArrowLeft className="h-4 w-4" />
                             </Link>
-                            <span>Participant Confirmation</span>
+                            <span className="text-sm">
+                                Participant Confirmation
+                            </span>
                         </div>
-                        <div className="space-y-4 p-4">
+                        <div className="space-y-2 p-3">
                             <div>
-                                <p className="text-sm text-gray-500">
+                                <p className="text-xs text-gray-500">
                                     Company Name
                                 </p>
-                                <p className="font-medium">
+                                <p className="text-sm font-medium">
                                     {item.company?.name}
                                 </p>
                             </div>
 
                             <div>
-                                <p className="text-sm text-gray-500">
+                                <p className="text-xs text-gray-500">
                                     PIC Name
                                 </p>
-                                <p className="font-medium">
+                                <p className="text-sm font-medium">
                                     {order?.user?.name}
                                 </p>
                             </div>
 
                             <div>
-                                <p className="text-sm text-gray-500">
+                                <p className="text-xs text-gray-500">
                                     PIC Email
                                 </p>
-                                <p className="font-medium">
+                                <p className="text-sm font-medium">
                                     {order?.user?.email}
                                 </p>
                             </div>
 
                             <div>
-                                <p className="text-sm text-gray-500">
+                                <p className="text-xs text-gray-500">
                                     PIC Phone Number
                                 </p>
-                                <p className="font-medium">
+                                <p className="text-sm font-medium">
                                     {order?.user?.phone}
                                 </p>
                             </div>
 
                             <div>
-                                <p className="text-sm text-gray-500">
+                                <p className="text-xs text-gray-500">
                                     Participant
                                 </p>
-                                <p className="font-medium">
+                                <p className="text-sm font-medium">
                                     {item.participant?.length}
                                 </p>
                             </div>
@@ -132,20 +135,22 @@ export default function InvitationDetail(props: {
                     </div>
 
                     {/* Participant List */}
-                    <div className="h-full min-h-[500px] space-y-3 bg-white p-5">
+                    <div className="space-y-2 bg-white p-4">
                         <div>
-                            <p className="font-medium">Participant Details</p>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm font-medium">
+                                Participant Details
+                            </p>
+                            <p className="text-xs text-gray-500">
                                 Select participant that will attend at the event
                             </p>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             {item.participant?.map((p) => (
                                 <label
                                     key={p.id}
                                     htmlFor={`participant-${p.id}`}
-                                    className="flex cursor-pointer items-center space-x-3"
+                                    className="flex cursor-pointer items-center space-x-2"
                                 >
                                     <Checkbox
                                         id={`participant-${p.id}`}
@@ -156,20 +161,23 @@ export default function InvitationDetail(props: {
                                             toggleParticipant(p.id)
                                         }
                                     />
-                                    <span>{p.user?.name}</span>
+                                    <span className="text-sm">
+                                        {p.user?.name}
+                                    </span>
                                 </label>
                             ))}
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="fixed inset-x-0 bottom-0 border-t bg-white p-4">
-                <div className="flex items-center justify-between">
+            <div className="fixed inset-x-0 bottom-0 border-t bg-white p-3 dark:bg-primary">
+                <div className="flex items-center justify-between gap-2">
                     <Button
                         disabled={loading}
                         onClick={() => handleSubmitAttendance('not_attend')}
                         variant="ghost"
-                        className="dark:text-secondary dark:hover:bg-primary"
+                        size="sm"
+                        className="flex-1 text-xs dark:text-secondary dark:hover:bg-primary"
                     >
                         Not Attend
                     </Button>
@@ -177,6 +185,8 @@ export default function InvitationDetail(props: {
                     <Button
                         disabled={loading}
                         onClick={() => handleSubmitAttendance('attend')}
+                        size="sm"
+                        className="flex-1 text-xs"
                     >
                         Attend
                     </Button>

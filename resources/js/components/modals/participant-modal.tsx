@@ -9,6 +9,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { TicketCategoryType } from '@/types';
+import { router } from '@inertiajs/react';
 import { DialogClose, DialogTrigger } from '@radix-ui/react-dialog';
 import axios from 'axios';
 import { FileImage, Upload, X } from 'lucide-react';
@@ -122,6 +123,7 @@ export function ParticipantModal({
             if (fileInputRef.current) fileInputRef.current.value = '';
             toast('Participant added');
             setModalOpen(false);
+            router.reload();
             onSuccess?.();
         } catch (err: any) {
             const msg =
@@ -146,7 +148,10 @@ export function ParticipantModal({
                     </DialogDescription>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit} className="space-y-4 overflow-auto h-[500px]">
+                <form
+                    onSubmit={handleSubmit}
+                    className="h-[500px] space-y-4 overflow-auto"
+                >
                     {error && (
                         <div className="rounded-sm bg-red-100 p-3 text-sm text-red-700">
                             {error}
@@ -227,9 +232,7 @@ export function ParticipantModal({
                     </div> */}
 
                     <div className="space-y-2">
-                        <Label htmlFor="company_logo">
-                            Company Image
-                        </Label>
+                        <Label htmlFor="company_logo">Company Image</Label>
                         {/* <input
                             ref={fileInputRef}
                             id="company_logo"

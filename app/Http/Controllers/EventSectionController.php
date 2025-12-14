@@ -66,9 +66,9 @@ class EventSectionController extends Controller
 
         $section->delete();
 
-        Event::deleting(function ($event) {
-            dd('EVENT DELETED', debug_backtrace());
-        });
+        // Event::deleting(function ($event) {
+        //     dd('EVENT DELETED', debug_backtrace());
+        // });
 
         return redirect()->back()->with('success', 'Event section deleted');
     }

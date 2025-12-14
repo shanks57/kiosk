@@ -164,13 +164,15 @@ export const EventSeatList = (props: EventSeatListProps) => {
                 </div>
             </Card>
 
-            <EventSeatModal
-                event={event}
-                seat={selectedSeat}
-                sections={eventSections || []}
-                isOpen={modalOpen}
-                setIsOpen={setModalOpen}
-            />
+            {modalOpen && (
+                <EventSeatModal
+                    event={event}
+                    seat={selectedSeat}
+                    sections={eventSections || []}
+                    isOpen={modalOpen}
+                    setIsOpen={setModalOpen}
+                />
+            )}
         </>
     );
 };

@@ -10,7 +10,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { EventSeatType, EventSectionType, EventType } from '@/types';
 import { router } from '@inertiajs/react';
-import axios from 'axios';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -44,22 +43,29 @@ export default function EventSeatModal({
         try {
             if (seat) {
                 // Update existing seat
-                await axios.put(
+                router.put(
                     `/dashboard/events/${event.id}/seats/${seat.id}`,
                     formData,
+                    {
+                        preserveScroll: true,
+                        onSuccess: () => {
+                            toast.success('Event seat updated successfully');
+                            setIsOpen(false);
+                            router.reload();
+                        },
+                    },
                 );
-                toast.success('Event seat updated successfully');
             } else {
                 // Create new seat
-                await axios.post(
-                    `/dashboard/events/${event.id}/seats`,
-                    formData,
-                );
-                toast.success('Event seat created successfully');
+                router.post(`/dashboard/events/${event.id}/seats`, formData, {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        toast.success('Event seat created successfully');
+                        setIsOpen(false);
+                        router.reload();
+                    },
+                });
             }
-
-            setIsOpen(false);
-            router.reload();
         } catch (error: any) {
             const message =
                 error.response?.data?.message || 'Failed to save event seat';
@@ -91,7 +97,7 @@ export default function EventSeatModal({
                                 })
                             }
                             required
-                            className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                            className="mt-1 w-full rounded-xs border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             <option value="">Select section</option>
                             {sections?.map((section) => (
@@ -149,7 +155,7 @@ export default function EventSeatModal({
                                     status: e.target.value,
                                 })
                             }
-                            className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                            className="mt-1 w-full rounded-xs border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             <option value="available">Available</option>
                             <option value="locked">Locked</option>

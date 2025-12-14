@@ -105,7 +105,7 @@ export default function ParticipantDetailModal(
     const handleDownloadTicket = async (item: OrderItemType) => {
         const code = item.booking_code || '';
         setPrintCode(code);
-
+        // console.log(item.participant?.[0])
         requestAnimationFrame(() => {
             const wrapper = qrWrapperRef.current;
             if (!wrapper) return;
@@ -117,7 +117,7 @@ export default function ParticipantDetailModal(
             }
 
             const svgHtml = new XMLSerializer().serializeToString(svg);
-            
+
             const html = generateTicketHtml({
                 code,
                 eventTitle: event.title || '',

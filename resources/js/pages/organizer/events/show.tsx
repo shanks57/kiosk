@@ -18,7 +18,7 @@ import {
 import { Head } from '@inertiajs/react';
 import { TabsContent } from '@radix-ui/react-tabs';
 import dayjs from 'dayjs';
-import { Calendar, PhoneCall } from 'lucide-react';
+import { Calendar, Mail, PhoneCall } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -46,7 +46,7 @@ export default function AttendancePage(props: AttendancePageProps) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Organizer Dashboard" />
             <div className="space-y-4 p-6">
-                <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex flex-wrap items-center gap-3">
                     <p className="text-foreground/50">
                         {`${dayjs(event.start_time).format('DD')} - ${dayjs(event.end_time).format('DD MMMM YYYY')} ${dayjs(event.start_time).format('HH:mm')} - ${dayjs(event.end_time).format('HH:mm')} WIB`}
                     </p>
@@ -63,10 +63,16 @@ export default function AttendancePage(props: AttendancePageProps) {
 
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-medium">{event.title}</h1>
-                    <Button size="sm" variant="outline">
-                        <PhoneCall className="mr-1 h-4 w-4" />
-                        Blast Whatsapp
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <Button size="sm" variant="outline">
+                            <PhoneCall className="mr-1 h-4 w-4" />
+                            Blast Whatsapp
+                        </Button>
+                        <Button size="sm" variant="outline">
+                            <Mail className="mr-1 h-4 w-4" />
+                            Blast Email
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Tabs */}
@@ -91,7 +97,10 @@ export default function AttendancePage(props: AttendancePageProps) {
                         <TicketCategoryList {...props} />
                     </TabsContent>
                     <TabsContent value="seats">
-                        <EventSeatList {...props} />
+                        <EventSeatList
+                            {...props}
+                            eventSections={eventSections}
+                        />
                     </TabsContent>
                 </Tabs>
             </div>

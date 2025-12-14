@@ -47,38 +47,38 @@ export default function Invitation(props: {
 }) {
     const { code, item } = props;
     return (
-        <div className="flex min-h-screen w-full flex-col bg-black">
+        <div className="flex min-h-screen w-screen flex-col bg-black">
             <Toaster />
 
-            <div className="flex items-center justify-between bg-white p-4 dark:bg-primary">
-                <h4 className="text-xs font-medium dark:text-secondary">
+            <div className="flex items-center justify-between bg-white p-3 dark:bg-primary">
+                <h4 className="text-[10px] font-medium dark:text-secondary">
                     This Ticketing System <br /> Powered by
                 </h4>
                 <Link href="/">
                     <img
-                        className="h-5 w-auto"
+                        className="h-4 w-auto"
                         src="/assets/icon.svg"
                         alt="tron-logo"
                     />
                 </Link>
             </div>
-            <div className="mx-auto flex max-w-md flex-col gap-y-4 pb-10">
+            <div className="flex flex-col gap-y-0 overflow-y-auto pb-24">
                 {items.map((item, i) => (
                     <img
                         key={i}
                         src={item.src}
                         alt={item.name}
-                        className="w-full"
+                        className="h-auto w-full"
                     />
                 ))}
             </div>
-            <div className="fixed inset-x-0 right-0 bottom-0 left-0 bg-white p-4">
+            <div className="fixed inset-x-0 bottom-0 bg-white p-4 dark:bg-primary">
                 <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-bold dark:text-secondary">
+                    <h4 className="text-xs font-bold dark:text-secondary">
                         Make a reservation
                     </h4>
                     <Link href={`/invitation/${code}/detail`}>
-                        <Button>Reserve Now</Button>
+                        <Button size="sm">Reserve Now</Button>
                     </Link>
                 </div>
             </div>

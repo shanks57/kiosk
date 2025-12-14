@@ -23,6 +23,7 @@ import {
     SortingState,
     useReactTable,
 } from '@tanstack/react-table';
+import dayjs from 'dayjs';
 import { MessageCircleQuestion, Trash } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -75,6 +76,8 @@ export const AttendanceList = (props: AttendancePageProps) => {
         setDeleteDialogOpen(true);
     };
 
+    console.log(participants.data)
+
     const columns: ColumnDef<OrderType>[] = [
         {
             accessorKey: 'ticket_code',
@@ -100,6 +103,17 @@ export const AttendanceList = (props: AttendancePageProps) => {
         {
             accessorKey: 'last_checkin_time',
             header: 'Last Check In',
+            cell: ({ row }) => {
+                const v: string | undefined =
+                    row.getValue('last_checkin_time') || undefined;
+                return (
+                    <span>
+                        {v
+                            ? dayjs(v).tz('Asia/Jakarta').format('D MMMM YYYY - HH:mm')
+                            : '-'}
+                    </span>
+                );
+            },
         },
         {
             accessorKey: 'attendance_status',

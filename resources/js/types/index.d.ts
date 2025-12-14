@@ -50,6 +50,7 @@ export interface EventSeatType {
     event_section_id?: number;
     row_number?: string | number | null;
     seat_number?: string | number | null;
+    event_section?: EventSectionType;
     status?: string | null;
     created_at?: string | null;
     updated_at?: string | null;
@@ -78,7 +79,7 @@ export interface OrderItemType {
     price?: number | null;
     created_at?: string | null;
     updated_at?: string | null;
-    order? : OrderType | null;
+    order?: OrderType | null;
     seat?: EventSeatType | null;
     category?: TicketCategoryType | null;
     participant?: ParticipantType[];
@@ -199,6 +200,7 @@ export type ParticipantType = {
     user?: UserType;
     order_item?: OrderItemType;
     seat?: EventSeatType;
+    
     company_id?: number | null;
     created_at?: string | null;
     updated_at?: string | null;

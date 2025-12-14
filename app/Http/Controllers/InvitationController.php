@@ -67,6 +67,8 @@ class InvitationController extends Controller
             return redirect()->back()->with(['message' => 'Order not found']);
         }
 
+        // dd(now()->toDateTimeString(), config('app.timezone'));
+
         $order->last_checkin_time = now();
         $order->attendance_status = 'checked-in';
         $order->save();

@@ -61,7 +61,7 @@ export default function ScanPage() {
             <div
                 className={cn(loading && 'fixed inset-0 z-[100] bg-black/50')}
             />
-            <div className="relative mx-auto aspect-[9/16] h-screen max-h-screen bg-black">
+            <div className="relative h-screen w-screen bg-black">
                 <Scanner
                     paused={loading || showModal}
                     onScan={(result) => {
@@ -70,20 +70,20 @@ export default function ScanPage() {
                     }}
                     onError={(error) => toast(error?.toString())}
                 />
-                <div className="absolute bottom-1/5 left-1/2 flex w-full -translate-x-1/2 -translate-y-[80%] px-4">
+                <div className="absolute bottom-1/3 left-1/2 z-10 flex w-full -translate-x-1/2 px-4">
                     <Dialog onOpenChange={setShowModal} open={showModal}>
-                        <DialogTrigger asChild>
+                        {/* <DialogTrigger asChild>
                             <Button
-                                size="lg"
+                                size="sm"
                                 variant="outline"
-                                className="w-full bg-transparent text-white"
+                                className="w-full bg-transparent text-xs text-white"
                             >
                                 CHECK IN APLI AWARD
                             </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-md overflow-hidden rounded-xl p-0">
+                        </DialogTrigger> */}
+                        <DialogContent className="max-w-sm overflow-hidden rounded-xl p-0">
                             {/* Header Image */}
-                            <div className="h-40 w-full overflow-hidden bg-black">
+                            <div className="h-32 w-full overflow-hidden bg-black">
                                 <img
                                     src={order?.order?.event?.banner || ''}
                                     alt={order?.order?.event?.title || ''}
@@ -91,13 +91,13 @@ export default function ScanPage() {
                                 />
                             </div>
 
-                            <div className="space-y-4 px-6 py-4">
+                            <div className="space-y-3 px-4 py-3">
                                 {/* Event Title */}
                                 <div>
-                                    <h2 className="text-xl font-semibold">
+                                    <h2 className="text-base font-semibold">
                                         {order?.order?.event?.title || ''}
                                     </h2>
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-xs text-gray-600">
                                         {dayjs(
                                             order?.order?.event?.start_time,
                                         ).format('DD MMM YYYY (ddd)')}{' '}
@@ -109,23 +109,23 @@ export default function ScanPage() {
                                 </div>
 
                                 {/* Ticket Info */}
-                                <div className="space-y-3">
-                                    <h3 className="text-base font-semibold">
+                                <div className="space-y-2">
+                                    <h3 className="text-sm font-semibold">
                                         Ticket Information
                                     </h3>
 
-                                    <div className="flex gap-4">
+                                    <div className="flex gap-3">
                                         <QRCode
-                                            size={100}
+                                            size={80}
                                             value={order?.booking_code || ''}
                                         />
 
-                                        <div className="space-y-1 text-sm">
+                                        <div className="space-y-1 text-xs">
                                             <div>
                                                 <p className="text-gray-500">
                                                     Company Name
                                                 </p>
-                                                <p className="font-medium">
+                                                <p className="text-xs font-medium">
                                                     {order?.company?.name ||
                                                         '-'}
                                                 </p>
@@ -134,7 +134,7 @@ export default function ScanPage() {
                                                 <p className="text-gray-500">
                                                     PIC Name
                                                 </p>
-                                                <p className="font-medium">
+                                                <p className="text-xs font-medium">
                                                     {order?.order?.user?.name ||
                                                         '-'}
                                                 </p>
@@ -143,16 +143,16 @@ export default function ScanPage() {
                                                 <p className="text-gray-500">
                                                     PIC Email
                                                 </p>
-                                                <p className="font-medium break-all">
+                                                <p className="text-xs font-medium break-all">
                                                     {order?.order?.user
                                                         ?.email || '-'}
                                                 </p>
                                             </div>
                                             <div>
                                                 <p className="text-gray-500">
-                                                    PIC Phone Number
+                                                    PIC Phone
                                                 </p>
-                                                <p className="font-medium">
+                                                <p className="text-xs font-medium">
                                                     {order?.order?.user
                                                         ?.phone || '-'}
                                                 </p>
@@ -161,7 +161,7 @@ export default function ScanPage() {
                                                 <p className="text-gray-500">
                                                     Participant
                                                 </p>
-                                                <p className="font-medium">
+                                                <p className="text-xs font-medium">
                                                     {order?.participant
                                                         ?.length || '-'}
                                                 </p>
@@ -175,7 +175,8 @@ export default function ScanPage() {
                                 <DialogClose asChild>
                                     <Button
                                         variant="ghost"
-                                        className="h-full w-full rounded-none border-none px-6 py-4 text-gray-600"
+                                        size="sm"
+                                        className="h-full w-full rounded-none border-none px-4 py-3 text-xs text-gray-600"
                                     >
                                         Cancel
                                     </Button>
@@ -183,7 +184,8 @@ export default function ScanPage() {
 
                                 <Button
                                     onClick={() => handleSubmit(code)}
-                                    className="h-full w-full rounded-none border-none px-6 py-4"
+                                    size="sm"
+                                    className="h-full w-full rounded-none border-none px-4 py-3 text-xs"
                                 >
                                     Confirm
                                 </Button>
@@ -192,39 +194,43 @@ export default function ScanPage() {
                     </Dialog>
                 </div>
 
-                <div className="absolute bottom-0 grid h-[30vh] w-full grid-cols-2 bg-white px-6 py-4">
-                    <div className="m-auto flex h-full flex-col justify-between gap-3">
-                        <p className="text-xs text-black">
+                <div className="absolute bottom-0 grid h-[20vh] w-full grid-cols-2 gap-0 bg-white px-3 py-3">
+                    <div className="m-auto flex h-full flex-col justify-between gap-2">
+                        <p className="text-[10px] text-black">
                             Masukkan kode secara manual jika{' '}
                             <strong>QR Code tidak terbaca.</strong>
                         </p>
                         <Link href="/checkin/manual">
-                            <Button className="w-fit" variant="outline">
+                            <Button
+                                className="h-8 w-fit text-xs"
+                                size="sm"
+                                variant="outline"
+                            >
                                 Check In Manual
                             </Button>
                         </Link>
-                        <div className="flex items-center justify-between bg-white">
-                            <p className="text-xs font-medium dark:text-secondary">
+                        <div className="flex items-center justify-between gap-1 bg-white">
+                            <p className="text-[9px] font-medium dark:text-secondary">
                                 This Ticketing System <br /> Powered by
                             </p>
                             <img
-                                className="h-4 w-auto"
+                                className="h-3 w-auto"
                                 src="/assets/icon.svg"
                                 alt="tron-logo"
                             />
                         </div>
                     </div>
-                    <div className="px-6">
-                        <Button className="flex h-full w-full flex-col items-center justify-center rounded-none bg-primary dark:bg-primary-foreground">
-                            <p className="text-lg font-medium text-white dark:text-foreground">
+                    <div className="px-2">
+                        <Button className="flex h-full w-full flex-col items-center justify-center gap-1 rounded-none bg-primary dark:bg-primary-foreground">
+                            <p className="text-sm font-medium text-white dark:text-foreground">
                                 Scan QR
                             </p>
                             <img
-                                className="h-20 w-20"
+                                className="h-12 w-12"
                                 src="/assets/hand-scan.svg"
                                 alt="scan-qr"
                             />
-                            <ChevronDown size={16} />
+                            <ChevronDown size={14} />
                         </Button>
                     </div>
                 </div>

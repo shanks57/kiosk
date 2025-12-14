@@ -163,7 +163,7 @@ export const EventSectionList = (props: EventSectionListProps) => {
                 </div>
             </Card>
 
-            {selectedSection && (
+            {modalOpen && (
                 <EventSectionModal
                     event={event}
                     section={selectedSection}

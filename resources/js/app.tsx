@@ -1,10 +1,23 @@
 import '../css/app.css';
 
 import { createInertiaApp } from '@inertiajs/react';
+import dayjs from 'dayjs';
+import 'dayjs/locale/id';
+import timezone from 'dayjs/plugin/timezone.js';
+import utc from 'dayjs/plugin/utc';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { initializeTheme } from './hooks/use-appearance';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+// ✅ DEFAULT TIMEZONE
+dayjs.tz.setDefault('Asia/Jakarta');
+
+// (optional) default locale Indonesia
+dayjs.locale('id');
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
