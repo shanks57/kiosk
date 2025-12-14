@@ -13,7 +13,6 @@ import { formatRupiah } from '@/lib/utils';
 import { AttendancePageProps } from '@/pages/organizer/events/show';
 import { EventSectionType } from '@/types';
 import { router } from '@inertiajs/react';
-import axios from 'axios';
 import { Edit, Plus, Trash } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -30,18 +29,18 @@ export const EventSectionList = (props: EventSectionListProps) => {
 
     const handleDelete = async (sectionId: number) => {
         if (!confirm('Delete this event section?')) return;
-
-        try {
-            await axios.delete(
-                `/dashboard/events/${event.id}/sections/${sectionId}`,
-            );
-            toast.success('Event section deleted');
-            router.reload();
-        } catch (err: any) {
-            toast.error(
-                err.response?.data?.message || 'Failed to delete event section',
-            );
-        }
+        router.delete(
+            `/dashboard/events/sections/${event.id}/delete/${sectionId}`,
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success('Event section deleted');
+                },
+                onError: () => {
+                    toast.error('Failed to delete event section');
+                },
+            },
+        );
     };
 
     return (
@@ -57,6 +56,7 @@ export const EventSectionList = (props: EventSectionListProps) => {
                         </div>
                         <div className="flex items-center gap-2">
                             <Button
+                                type="button"
                                 size="sm"
                                 onClick={() => {
                                     setSelectedSection(null);
@@ -114,6 +114,7 @@ export const EventSectionList = (props: EventSectionListProps) => {
                                             <TableCell>
                                                 <div className="flex items-center gap-2">
                                                     <Button
+                                                        type="button"
                                                         size="sm"
                                                         variant="ghost"
                                                         onClick={() => {
@@ -126,13 +127,16 @@ export const EventSectionList = (props: EventSectionListProps) => {
                                                         <Edit className="h-3 w-3" />
                                                     </Button>
                                                     <Button
+                                                        type="button"
                                                         size="sm"
                                                         variant="ghost"
-                                                        onClick={() =>
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
                                                             handleDelete(
                                                                 section.id,
-                                                            )
-                                                        }
+                                                            );
+                                                        }}
                                                     >
                                                         <Trash className="h-3 w-3 text-red-500" />
                                                     </Button>

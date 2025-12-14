@@ -51,10 +51,13 @@ class EventSectionController extends Controller
         return redirect()->back()->with('success', 'Event section updated');
     }
 
-    public function destroy(Event $event, EventSection $section)
+    public function destroy($eventId, $sectionId)
     {
+        $event = Event::findOrFail($eventId);
+        $section = EventSection::findOrFail($sectionId);
         $user = Auth::user();
         $organizer = $user->organizer;
+
 
         abort_if($event->organizer_id != $organizer?->id, 403);
 
@@ -62,6 +65,10 @@ class EventSectionController extends Controller
         abort_if($section->event_id != $event->id, 403);
 
         $section->delete();
+
+        Event::deleting(function ($event) {
+            dd('EVENT DELETED', debug_backtrace());
+        });
 
         return redirect()->back()->with('success', 'Event section deleted');
     }

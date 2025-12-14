@@ -109,7 +109,7 @@ export const AttendanceList = (props: AttendancePageProps) => {
                     row.getValue('attendance_status') || undefined;
                 return (
                     <span
-                        className={cn('rounded-sm text-sm py-1 px-2', {
+                        className={cn('rounded-sm px-2 py-1 text-sm', {
                             'bg-primary/80 text-white': v === 'checked-in',
                             'bg-red-500 text-white': v !== 'checked-in',
                         })}
@@ -275,26 +275,27 @@ export const AttendanceList = (props: AttendancePageProps) => {
             <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Order</DialogTitle>
+                        <DialogTitle>
+                            Delete Order Participant Company
+                        </DialogTitle>
                         <DialogDescription>
                             Are you sure you want to delete this order? This
                             action cannot be undone.
                         </DialogDescription>
                     </DialogHeader>
                     {selectedOrder && (
-                        <div className="space-y-2 py-4">
+                        <div className="py- grid grid-cols-2 space-y-2">
+                            <span className="font-semibold">Ticket Code:</span>
                             <p className="text-sm">
-                                <span className="font-semibold">
-                                    Ticket Code:
-                                </span>{' '}
+                                {' '}
                                 {selectedOrder.ticket_code}
                             </p>
+                            <span className="font-semibold">Company:</span>{' '}
                             <p className="text-sm">
-                                <span className="font-semibold">Company:</span>{' '}
                                 {selectedOrder.user?.company?.name}
                             </p>
+                            <span className="font-semibold">PIC:</span>{' '}
                             <p className="text-sm">
-                                <span className="font-semibold">PIC:</span>{' '}
                                 {selectedOrder.user?.name}
                             </p>
                         </div>

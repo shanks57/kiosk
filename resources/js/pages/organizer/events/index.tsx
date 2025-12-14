@@ -55,14 +55,14 @@ export default function EventsPage(props: {
     const [filter, setFilter] = useState('');
 
     const handleDelete = (id: number) => {
-        axios
-            .delete('/dashboard/events/' + id)
-            .then(() => {
-                toast('Event deleted');
-            })
-            .catch((error) => {
-                toast(error.response.data.message);
-            });
+        // axios
+        //     .delete('/dashboard/events/' + id)
+        //     .then(() => {
+        //         toast('Event deleted');
+        //     })
+        //     .catch((error) => {
+        //         toast(error.response.data.message);
+        //     });
     };
 
     const columns: ColumnDef<EventType>[] = [

@@ -71,7 +71,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{event}', [OrganizerEventController::class, 'show'])->name('show');
         Route::get('/{event}/edit', [OrganizerEventController::class, 'edit'])->name('edit');
         Route::put('/{event}', [OrganizerEventController::class, 'update'])->name('update');
-        Route::delete('/{event}', [OrganizerEventController::class, 'destroy'])->name('destroy');
+        Route::delete('/{event}/delete', [OrganizerEventController::class, 'destroy'])->name('destroy');
 
         Route::get('/{event}/participants', [ParticipantController::class, 'index'])->name('participants');
         Route::post('/{event}/participants', [ParticipantController::class, 'store'])->name('participants.store');
@@ -94,7 +94,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Event sections CRUD for an event
         Route::post('/{event}/sections', [EventSectionController::class, 'store'])->name('sections.store');
         Route::put('/{event}/sections/{section}', [EventSectionController::class, 'update'])->name('sections.update');
-        Route::delete('/{event}/sections/{section}', [EventSectionController::class, 'destroy'])->name('sections.destroy');
+        Route::delete('/sections/{event}/delete/{section}', [EventSectionController::class, 'destroy'])->name('sections.destroy');
 
         // Event seats CRUD for an event
         Route::get('/{event}/seats', [EventSeatController::class, 'index'])->name('seats.index');

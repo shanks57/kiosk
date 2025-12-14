@@ -12,7 +12,6 @@ import {
 import { AttendancePageProps } from '@/pages/organizer/events/show';
 import { EventSeatType, EventSectionType } from '@/types';
 import { router } from '@inertiajs/react';
-import axios from 'axios';
 import { Edit, Plus, Trash } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -31,16 +30,15 @@ export const EventSeatList = (props: EventSeatListProps) => {
 
     const handleDelete = async (seatId: number) => {
         if (!confirm('Delete this event seat?')) return;
-
-        try {
-            await axios.delete(`/dashboard/events/${event.id}/seats/${seatId}`);
-            toast.success('Event seat deleted');
-            router.reload();
-        } catch (err: any) {
-            toast.error(
-                err.response?.data?.message || 'Failed to delete event seat',
-            );
-        }
+        router.delete(`/dashboard/events/${event.id}/seats/${seatId}`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success('Event seat deleted');
+            },
+            onError: () => {
+                toast.error('Failed to delete event seat');
+            },
+        });
     };
 
     const getStatusBadgeColor = (status: string | null | undefined) => {

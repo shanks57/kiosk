@@ -23,6 +23,6 @@ class OrderController extends Controller
         // Delete order and all related participants
         $order->delete();
 
-        return response()->json(['message' => 'Order deleted successfully'], 200);
+        return redirect()->back()->with('success', 'Order Company Participants deleted');
     }
 }
