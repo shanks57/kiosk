@@ -20,7 +20,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, EventType, PaginationType } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
     ColumnDef,
     flexRender,
@@ -31,7 +31,6 @@ import {
     SortingState,
     useReactTable,
 } from '@tanstack/react-table';
-import axios from 'axios';
 import { Eye, Trash } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -55,14 +54,16 @@ export default function EventsPage(props: {
     const [filter, setFilter] = useState('');
 
     const handleDelete = (id: number) => {
-        // axios
-        //     .delete('/dashboard/events/' + id)
-        //     .then(() => {
-        //         toast('Event deleted');
-        //     })
-        //     .catch((error) => {
-        //         toast(error.response.data.message);
-        //     });
+        router.delete(`/dashboard/events/${id}/delete`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast('Event deleted');
+                router.reload();
+            },
+            onError: (error) => {
+                toast(error.response);
+            },
+        });
     };
 
     const columns: ColumnDef<EventType>[] = [

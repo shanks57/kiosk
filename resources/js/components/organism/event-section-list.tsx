@@ -118,6 +118,9 @@ export const EventSectionList = (props: EventSectionListProps) => {
                                                         size="sm"
                                                         variant="ghost"
                                                         onClick={() => {
+                                                            console.log(
+                                                                section,
+                                                            );
                                                             setSelectedSection(
                                                                 section,
                                                             );
@@ -160,12 +163,14 @@ export const EventSectionList = (props: EventSectionListProps) => {
                 </div>
             </Card>
 
-            <EventSectionModal
-                event={event}
-                section={selectedSection}
-                isOpen={modalOpen}
-                setIsOpen={setModalOpen}
-            />
+            {selectedSection && (
+                <EventSectionModal
+                    event={event}
+                    section={selectedSection}
+                    isOpen={modalOpen}
+                    setIsOpen={setModalOpen}
+                />
+            )}
         </>
     );
 };

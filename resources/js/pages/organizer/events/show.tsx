@@ -40,7 +40,7 @@ export type AttendancePageProps = {
 };
 
 export default function AttendancePage(props: AttendancePageProps) {
-    const { event, ticketCategories, participants } = props;
+    const { event, ticketCategories, participants, eventSections } = props;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>

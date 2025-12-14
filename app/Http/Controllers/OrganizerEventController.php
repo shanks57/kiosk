@@ -84,7 +84,12 @@ class OrganizerEventController extends Controller
     {
         $user = Auth::user();
         $organizer = $user->organizer;
-        $event = Event::where('id', $eventId)->firstOrFail();
+        $event = Event::with([
+            'venue',
+            'sections.seats',
+            'organizer.user',
+            'ticketCategories',
+        ])->where('id', $eventId)->firstOrFail();
 
         abort_if($event->organizer_id != $organizer?->id, 403);
 
@@ -100,7 +105,7 @@ class OrganizerEventController extends Controller
                 'items.participant.user',
                 'items.company',
             ])
-            ->paginate(20)
+            ->paginate(100)
             ->withQueryString()
             ->through(function ($order) {
                 $order->participant_count = $order->items->sum(function ($item) {

@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AttendancePageProps } from '@/pages/organizer/events/show';
 import { useForm } from '@inertiajs/react';
+import dayjs from 'dayjs';
 import { toast } from 'sonner';
 import { Card } from '../ui/card';
 
@@ -10,13 +11,24 @@ export const EventForm = (props: AttendancePageProps) => {
     const { data, setData, put, processing, errors } = useForm({
         title: event.title || '',
         description: event.description || '',
-        start_time: event.start_time || '',
-        end_time: event.end_time || '',
+        start_time: event.start_time
+            ? dayjs(event.start_time).format('YYYY-MM-DDTHH:mm')
+            : '',
+        end_time: event.end_time
+            ? dayjs(event.end_time).format('YYYY-MM-DDTHH:mm')
+            : '',
         banner: event.banner || '',
     });
 
+    console.log(
+        dayjs(event.start_time).format('YYYY-MM-DDTHH:mm'),
+        dayjs(event.end_time).format('YYYY-MM-DDTHH:mm'),
+    );
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        console.log(data.start_time, data.end_time);
+
         put(`/dashboard/events/${event.id}`, {
             onSuccess: () => {
                 toast('Event updated');

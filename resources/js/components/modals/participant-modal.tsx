@@ -146,7 +146,7 @@ export function ParticipantModal({
                     </DialogDescription>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4 overflow-auto h-[500px]">
                     {error && (
                         <div className="rounded-sm bg-red-100 p-3 text-sm text-red-700">
                             {error}
@@ -228,7 +228,7 @@ export function ParticipantModal({
 
                     <div className="space-y-2">
                         <Label htmlFor="company_logo">
-                            Company Image (optional)
+                            Company Image
                         </Label>
                         {/* <input
                             ref={fileInputRef}
