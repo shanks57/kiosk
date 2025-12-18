@@ -22,6 +22,7 @@ use App\Http\Controllers\Auth\OtpController;
 use App\Http\Controllers\Auth\RegisterCompleteController;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
+use App\Http\Controllers\Api\EventSuggestionController;
 
 Route::get('/', [LandingController::class, 'index'])->name('welcome');
 
@@ -39,6 +40,9 @@ Route::get('/auth/register-complete', function () {
     return Inertia::render('auth/register-complete', ['email' => $email]);
 })->name('auth.register-complete');
 Route::post('/auth/register-complete', [RegisterCompleteController::class, 'store'])->name('register.store');
+
+// Suggestions API for frontend autocomplete
+Route::get('/api/events/suggestions', [EventSuggestionController::class, 'suggestions']);
 
 // Event listing and detail routes (public)
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
