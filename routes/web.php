@@ -18,10 +18,27 @@ use App\Http\Controllers\EventSectionController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\Auth\OtpController;
+use App\Http\Controllers\Auth\RegisterCompleteController;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
 Route::get('/', [LandingController::class, 'index'])->name('welcome');
+
+// OTP Authentication Routes
+Route::post('/auth/send-login-otp', [OtpController::class, 'sendLoginOtp'])->name('auth.send-login-otp');
+Route::post('/auth/send-register-otp', [OtpController::class, 'sendRegisterOtp'])->name('auth.send-register-otp');
+Route::get('/auth/otp-verify', [OtpController::class, 'showVerifyForm'])->name('auth.otp-verify');
+Route::post('/auth/otp-verify', [OtpController::class, 'verify'])->name('auth.otp-verify');
+Route::post('/auth/otp-resend', [OtpController::class, 'resendOtp'])->name('auth.otp-resend');
+Route::get('/auth/register-complete', function () {
+    $email = request()->query('email');
+    if (!$email) {
+        return redirect()->route('register');
+    }
+    return Inertia::render('auth/register-complete', ['email' => $email]);
+})->name('auth.register-complete');
+Route::post('/auth/register-complete', [RegisterCompleteController::class, 'store'])->name('register.store');
 
 // Event listing and detail routes (public)
 Route::get('/events', [EventController::class, 'index'])->name('events.index');

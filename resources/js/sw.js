@@ -4,7 +4,7 @@ const RUNTIME = 'runtime-cache';
 // Files to precache — add root and common static assets.
 const PRECACHE_URLS = [
     '/',
-    '/favicon.ico',
+    '/favicon.svg',
     '/favicon.svg',
     '/apple-touch-icon.png',
 ];
